@@ -499,10 +499,21 @@ class MCPServerValidator:
                         with open(scan_filename, 'w') as scan_file:
                             json.dump(scan_results, scan_file, indent=2)
                         
-                        # Extract key metrics
-                        server_results = scan_results.get("servers", {}).get("test-server", {})
-                        vulnerabilities = server_results.get("vulnerabilities", [])
-                        tools_scanned = server_results.get("tools_scanned", 0)
+                        # Extract key metrics from mcp-scan format
+                        # The format is: {"/path/to/config.json": {"servers": [{"signature": {"tools": [...], "vulnerabilities": [...]}}]}}
+                        tools_scanned = 0
+                        vulnerabilities = []
+                        
+                        for config_path, config_data in scan_results.items():
+                            if "servers" in config_data:
+                                for server in config_data["servers"]:
+                                    signature = server.get("signature", {})
+                                    tools = signature.get("tools", [])
+                                    tools_scanned += len(tools)
+                                    
+                                    # Look for vulnerabilities in the signature
+                                    server_vulns = signature.get("vulnerabilities", [])
+                                    vulnerabilities.extend(server_vulns)
                         
                         print(f"    📊 Scanned {tools_scanned} tools")
                         if vulnerabilities:
@@ -649,9 +660,20 @@ def generate_json_report(result: MCPValidationResult, command_args: List[str], e
     
     # Add security analysis summary if available
     if result.mcp_scan_results:
-        scan_data = result.mcp_scan_results.get("servers", {}).get("test-server", {})
-        vulnerabilities = scan_data.get("vulnerabilities", [])
-        tools_scanned = scan_data.get("tools_scanned", 0)
+        # Parse mcp-scan format: {"/path/to/config.json": {"servers": [{"signature": {"tools": [...], "vulnerabilities": [...]}}]}}
+        tools_scanned = 0
+        vulnerabilities = []
+        
+        for config_path, config_data in result.mcp_scan_results.items():
+            if "servers" in config_data:
+                for server in config_data["servers"]:
+                    signature = server.get("signature", {})
+                    tools = signature.get("tools", [])
+                    tools_scanned += len(tools)
+                    
+                    # Look for vulnerabilities in the signature
+                    server_vulns = signature.get("vulnerabilities", [])
+                    vulnerabilities.extend(server_vulns)
         
         report["security_analysis"]["summary"] = {
             "tools_scanned": tools_scanned,
@@ -779,9 +801,18 @@ async def main():
         
         # Display mcp-scan results if available
         if result.mcp_scan_results:
-            scan_data = result.mcp_scan_results.get("servers", {}).get("test-server", {})
-            vulnerabilities = scan_data.get("vulnerabilities", [])
-            tools_scanned = scan_data.get("tools_scanned", 0)
+            # Parse mcp-scan format
+            tools_scanned = 0
+            vulnerabilities = []
+            
+            for config_path, config_data in result.mcp_scan_results.items():
+                if "servers" in config_data:
+                    for server in config_data["servers"]:
+                        signature = server.get("signature", {})
+                        tools = signature.get("tools", [])
+                        tools_scanned += len(tools)
+                        server_vulns = signature.get("vulnerabilities", [])
+                        vulnerabilities.extend(server_vulns)
             
             if vulnerabilities:
                 print(f"🔍 Security Scan: {len(vulnerabilities)} issues found in {tools_scanned} tools")
