@@ -27,6 +27,7 @@ class MCPValidationResult:
     checklist: Dict[str, Any] = None
     mcp_scan_file: str = None
     ping_result: Dict[str, Any] = None
+    error_compliance: Dict[str, Any] = None
 
 
 class MCPServerValidator:
@@ -87,6 +88,7 @@ class MCPServerValidator:
         mcp_scan_results = None
         mcp_scan_file = None
         ping_result = None
+        error_compliance = None
         
         # Initialize checklist
         checklist = {
@@ -98,6 +100,11 @@ class MCPServerValidator:
                 "capabilities": {"status": "pending", "details": "Validate capabilities structure"},
                 "initialized_notification": {"status": "pending", "details": "Send initialized notification"},
                 "ping_test": {"status": "pending", "details": "Test optional ping functionality"}
+            },
+            "error_compliance_testing": {
+                "invalid_method": {"status": "pending", "details": "Test error response for invalid method"},
+                "invalid_request_format": {"status": "pending", "details": "Test error response for malformed JSON-RPC"},
+                "error_response_format": {"status": "pending", "details": "Validate error response structure compliance"}
             },
             "capability_testing": {
                 "resources_capability": {"status": "pending", "details": "Test resources capability if advertised"},
@@ -130,6 +137,9 @@ class MCPServerValidator:
             
             # Test ping protocol (optional, doesn't affect validation result)
             ping_result = await self._test_ping_protocol(process, warnings, checklist)
+            
+            # Test error compliance (optional, doesn't affect validation result)
+            error_compliance = await self._test_error_compliance(process, warnings, checklist)
             
             # Run mcp-scan if available and protocol validation passed
             if self.use_mcp_scan:
@@ -182,7 +192,8 @@ class MCPServerValidator:
             mcp_scan_results=mcp_scan_results,
             checklist=checklist,
             mcp_scan_file=mcp_scan_file,
-            ping_result=ping_result
+            ping_result=ping_result,
+            error_compliance=error_compliance
         )
     
     async def _validate_protocol(
@@ -514,6 +525,185 @@ class MCPServerValidator:
         
         return ping_result
     
+    async def _test_error_compliance(self, process: asyncio.subprocess.Process, warnings: List[str], checklist: Dict[str, Any]) -> Dict[str, Any]:
+        """Test MCP error response compliance with JSON-RPC 2.0 standards."""
+        print("🔄 Step 3.6: Testing error response compliance...")
+        
+        error_compliance = {
+            "invalid_method_test": {"passed": False, "error": None, "details": None},
+            "malformed_request_test": {"passed": False, "error": None, "details": None},
+            "compliance_issues": []
+        }
+        
+        # Test 1: Invalid method call
+        await self._test_invalid_method_error(process, warnings, checklist, error_compliance)
+        
+        # Test 2: Malformed JSON-RPC request
+        await self._test_malformed_request_error(process, warnings, checklist, error_compliance)
+        
+        return error_compliance
+    
+    async def _test_invalid_method_error(self, process: asyncio.subprocess.Process, warnings: List[str], checklist: Dict[str, Any], error_compliance: Dict[str, Any]):
+        """Test error response for invalid method calls."""
+        print("  🔄 Testing invalid method error...")
+        checklist["error_compliance_testing"]["invalid_method"]["status"] = "running"
+        
+        try:
+            # Send request with invalid method name
+            invalid_request = self._create_jsonrpc_request("invalid_method_that_does_not_exist", {})
+            
+            process.stdin.write(invalid_request.encode())
+            await process.stdin.drain()
+            
+            # Read response
+            try:
+                response_line = await asyncio.wait_for(
+                    process.stdout.readline(),
+                    timeout=5.0
+                )
+                response = self._parse_jsonrpc_response(response_line.decode())
+                
+                # Validate error response structure
+                if "error" in response:
+                    error = response["error"]
+                    
+                    # Check required fields per MCP specification
+                    compliance_issues = []
+                    
+                    if "code" not in error:
+                        compliance_issues.append("Missing required 'code' field in error")
+                    elif not isinstance(error["code"], int):
+                        compliance_issues.append("Error 'code' must be an integer")
+                    
+                    if "message" not in error:
+                        compliance_issues.append("Missing required 'message' field in error")
+                    elif not isinstance(error["message"], str):
+                        compliance_issues.append("Error 'message' must be a string")
+                    
+                    # Check for standard JSON-RPC error codes
+                    error_code = error.get("code")
+                    if error_code == -32601:  # Method not found
+                        print("    ✅ Correct error code (-32601) for invalid method")
+                        error_compliance["invalid_method_test"]["passed"] = True
+                        checklist["error_compliance_testing"]["invalid_method"]["status"] = "passed"
+                    elif isinstance(error_code, int):
+                        print(f"    ⚠️  Non-standard error code ({error_code}) for invalid method (expected -32601)")
+                        warnings.append(f"Non-standard error code {error_code} for invalid method (JSON-RPC 2.0 recommends -32601)")
+                        error_compliance["invalid_method_test"]["passed"] = True
+                        checklist["error_compliance_testing"]["invalid_method"]["status"] = "warning"
+                    
+                    error_compliance["invalid_method_test"]["details"] = {
+                        "code": error_code,
+                        "message": error.get("message", ""),
+                        "data": error.get("data")
+                    }
+                    
+                    if compliance_issues:
+                        error_compliance["compliance_issues"].extend(compliance_issues)
+                        for issue in compliance_issues:
+                            warnings.append(f"Error compliance issue: {issue}")
+                        print(f"    ⚠️  Error format issues: {', '.join(compliance_issues)}")
+                        checklist["error_compliance_testing"]["invalid_method"]["status"] = "warning"
+                    
+                elif "result" in response:
+                    # Server returned success for invalid method - this is incorrect
+                    error_compliance["invalid_method_test"]["error"] = "Server returned success for invalid method"
+                    print("    ❌ Server returned success for invalid method (should return error)")
+                    warnings.append("Server returned success for invalid method call (should return JSON-RPC error)")
+                    checklist["error_compliance_testing"]["invalid_method"]["status"] = "warning"
+                else:
+                    error_compliance["invalid_method_test"]["error"] = "Invalid response format"
+                    print("    ❌ Invalid response format (missing both result and error)")
+                    warnings.append("Invalid method response missing both 'result' and 'error' fields")
+                    checklist["error_compliance_testing"]["invalid_method"]["status"] = "warning"
+                    
+            except asyncio.TimeoutError:
+                error_compliance["invalid_method_test"]["error"] = "Timeout"
+                print("    ⚠️  Invalid method test timed out")
+                warnings.append("Invalid method error test timed out")
+                checklist["error_compliance_testing"]["invalid_method"]["status"] = "warning"
+                
+        except Exception as e:
+            error_compliance["invalid_method_test"]["error"] = str(e)
+            print(f"    ❌ Invalid method test failed: {str(e)}")
+            warnings.append(f"Invalid method error test failed: {str(e)}")
+            checklist["error_compliance_testing"]["invalid_method"]["status"] = "warning"
+    
+    async def _test_malformed_request_error(self, process: asyncio.subprocess.Process, warnings: List[str], checklist: Dict[str, Any], error_compliance: Dict[str, Any]):
+        """Test error response for malformed JSON-RPC requests."""
+        print("  🔄 Testing malformed request error...")
+        checklist["error_compliance_testing"]["invalid_request_format"]["status"] = "running"
+        
+        try:
+            # Send malformed JSON request
+            malformed_request = '{"jsonrpc": "2.0", "method": "test", "id": 1, "invalid_field":}\n'
+            
+            process.stdin.write(malformed_request.encode())
+            await process.stdin.drain()
+            
+            # Read response
+            try:
+                response_line = await asyncio.wait_for(
+                    process.stdout.readline(),
+                    timeout=5.0
+                )
+                
+                # Try to parse response
+                try:
+                    response = self._parse_jsonrpc_response(response_line.decode())
+                    
+                    if "error" in response:
+                        error = response["error"]
+                        error_code = error.get("code")
+                        
+                        # Check for parse error code
+                        if error_code == -32700:  # Parse error
+                            print("    ✅ Correct error code (-32700) for malformed JSON")
+                            error_compliance["malformed_request_test"]["passed"] = True
+                            checklist["error_compliance_testing"]["invalid_request_format"]["status"] = "passed"
+                        elif isinstance(error_code, int):
+                            print(f"    ⚠️  Non-standard error code ({error_code}) for malformed JSON (expected -32700)")
+                            warnings.append(f"Non-standard error code {error_code} for malformed JSON (JSON-RPC 2.0 recommends -32700)")
+                            error_compliance["malformed_request_test"]["passed"] = True
+                            checklist["error_compliance_testing"]["invalid_request_format"]["status"] = "warning"
+                        
+                        error_compliance["malformed_request_test"]["details"] = {
+                            "code": error_code,
+                            "message": error.get("message", ""),
+                            "data": error.get("data")
+                        }
+                    else:
+                        error_compliance["malformed_request_test"]["error"] = "No error response for malformed JSON"
+                        print("    ⚠️  Server did not return error for malformed JSON")
+                        warnings.append("Server should return parse error for malformed JSON-RPC request")
+                        checklist["error_compliance_testing"]["invalid_request_format"]["status"] = "warning"
+                        
+                except json.JSONDecodeError:
+                    # Server sent invalid JSON response to malformed request
+                    error_compliance["malformed_request_test"]["error"] = "Server sent invalid JSON response"
+                    print("    ⚠️  Server sent invalid JSON response to malformed request")
+                    warnings.append("Server sent invalid JSON response to malformed request")
+                    checklist["error_compliance_testing"]["invalid_request_format"]["status"] = "warning"
+                    
+            except asyncio.TimeoutError:
+                error_compliance["malformed_request_test"]["error"] = "Timeout"
+                print("    ⚠️  Malformed request test timed out")
+                warnings.append("Malformed request error test timed out")
+                checklist["error_compliance_testing"]["invalid_request_format"]["status"] = "warning"
+                
+        except Exception as e:
+            error_compliance["malformed_request_test"]["error"] = str(e)
+            print(f"    ❌ Malformed request test failed: {str(e)}")
+            warnings.append(f"Malformed request error test failed: {str(e)}")
+            checklist["error_compliance_testing"]["invalid_request_format"]["status"] = "warning"
+        
+        # Update overall error response format status
+        if (error_compliance["invalid_method_test"]["passed"] or 
+            error_compliance["malformed_request_test"]["passed"]):
+            checklist["error_compliance_testing"]["error_response_format"]["status"] = "passed"
+        else:
+            checklist["error_compliance_testing"]["error_response_format"]["status"] = "warning"
+    
     async def _run_mcp_scan(self, command_args: List[str], env_vars: Dict[str, str] = None, errors: List[str] = None, warnings: List[str] = None, checklist: Dict[str, Any] = None) -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
         """Run mcp-scan security analysis on the server."""
         if checklist:
@@ -733,6 +923,12 @@ def generate_json_report(result: MCPValidationResult, command_args: List[str], e
             "response_time_ms": result.ping_result.get("response_time_ms") if result.ping_result else None,
             "error": result.ping_result.get("error") if result.ping_result else None
         },
+        "error_compliance": {
+            "tested": result.error_compliance is not None,
+            "invalid_method_test": result.error_compliance.get("invalid_method_test", {}) if result.error_compliance else {},
+            "malformed_request_test": result.error_compliance.get("malformed_request_test", {}) if result.error_compliance else {},
+            "compliance_issues": result.error_compliance.get("compliance_issues", []) if result.error_compliance else []
+        },
         "security_analysis": {
             "mcp_scan_executed": result.mcp_scan_results is not None,
             "mcp_scan_file": result.mcp_scan_file,
@@ -896,6 +1092,26 @@ async def main():
                     print("🏓 Ping: Not supported (optional)")
                 else:
                     print(f"🏓 Ping: {error}")
+        
+        # Display error compliance results
+        if result.error_compliance:
+            invalid_method = result.error_compliance.get("invalid_method_test", {})
+            malformed_request = result.error_compliance.get("malformed_request_test", {})
+            compliance_issues = result.error_compliance.get("compliance_issues", [])
+            
+            passed_tests = []
+            if invalid_method.get("passed"):
+                passed_tests.append("invalid method")
+            if malformed_request.get("passed"):
+                passed_tests.append("malformed request")
+            
+            if passed_tests:
+                tests_str = " & ".join(passed_tests)
+                print(f"⚠️  Error compliance: {tests_str} handling validated")
+            
+            if compliance_issues:
+                issue_count = len(compliance_issues)
+                print(f"⚠️  Error compliance: {issue_count} format issue(s) detected")
         
         # Display mcp-scan results if available
         if result.mcp_scan_results:
