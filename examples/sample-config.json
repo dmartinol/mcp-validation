@@ -1,0 +1,104 @@
+{
+  "active_profile": "comprehensive",
+  "profiles": {
+    "quick": {
+      "description": "Quick validation for development",
+      "global_timeout": 15.0,
+      "continue_on_failure": true,
+      "parallel_execution": false,
+      "validators": {
+        "protocol": {
+          "enabled": true,
+          "required": true,
+          "timeout": 10.0
+        },
+        "capabilities": {
+          "enabled": true,
+          "required": false,
+          "timeout": 5.0,
+          "parameters": {
+            "max_items_to_list": 10
+          }
+        }
+      }
+    },
+    "comprehensive": {
+      "description": "Complete validation with all features",
+      "global_timeout": 60.0,
+      "continue_on_failure": true,
+      "parallel_execution": false,
+      "validators": {
+        "protocol": {
+          "enabled": true,
+          "required": true,
+          "timeout": 30.0
+        },
+        "capabilities": {
+          "enabled": true,
+          "required": false,
+          "timeout": 15.0,
+          "parameters": {
+            "max_items_to_list": 100
+          }
+        },
+        "ping": {
+          "enabled": true,
+          "required": false,
+          "timeout": 5.0,
+          "parameters": {
+            "max_response_time_ms": 1000
+          }
+        },
+        "errors": {
+          "enabled": true,
+          "required": false,
+          "timeout": 10.0,
+          "parameters": {
+            "test_malformed_requests": true,
+            "test_invalid_methods": true,
+            "strict_error_codes": false
+          }
+        },
+        "security": {
+          "enabled": true,
+          "required": false,
+          "timeout": 60.0,
+          "parameters": {
+            "run_mcp_scan": true,
+            "vulnerability_threshold": "medium",
+            "save_scan_results": true
+          }
+        }
+      }
+    },
+    "security_focused": {
+      "description": "Security-focused validation",
+      "global_timeout": 90.0,
+      "continue_on_failure": true,
+      "parallel_execution": false,
+      "validators": {
+        "protocol": {
+          "enabled": true,
+          "required": true
+        },
+        "errors": {
+          "enabled": true,
+          "required": false,
+          "parameters": {
+            "strict_error_codes": true
+          }
+        },
+        "security": {
+          "enabled": true,
+          "required": true,
+          "timeout": 90.0,
+          "parameters": {
+            "run_mcp_scan": true,
+            "vulnerability_threshold": "low",
+            "save_scan_results": true
+          }
+        }
+      }
+    }
+  }
+}

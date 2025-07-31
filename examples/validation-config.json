@@ -1,0 +1,100 @@
+{
+  "active_profile": "custom_comprehensive",
+  "profiles": {
+    "custom_comprehensive": {
+      "description": "Custom comprehensive validation with specific timeouts",
+      "global_timeout": 45.0,
+      "continue_on_failure": true,
+      "parallel_execution": false,
+      "validators": {
+        "protocol": {
+          "enabled": true,
+          "required": true,
+          "timeout": 30.0,
+          "parameters": {
+            "strict_version_check": true,
+            "validate_client_info": true
+          }
+        },
+        "capabilities": {
+          "enabled": true,
+          "required": false,
+          "timeout": 15.0,
+          "parameters": {
+            "test_all_capabilities": true,
+            "max_items_to_list": 100
+          }
+        },
+        "ping": {
+          "enabled": true,
+          "required": false,
+          "timeout": 5.0,
+          "parameters": {
+            "max_response_time_ms": 1000
+          }
+        },
+        "errors": {
+          "enabled": true,
+          "required": false,
+          "timeout": 10.0,
+          "parameters": {
+            "test_malformed_requests": true,
+            "test_invalid_methods": true,
+            "strict_error_codes": false
+          }
+        },
+        "security": {
+          "enabled": true,
+          "required": false,
+          "timeout": 60.0,
+          "parameters": {
+            "run_mcp_scan": true,
+            "vulnerability_threshold": "medium",
+            "save_scan_results": true
+          }
+        }
+      }
+    },
+    "quick_check": {
+      "description": "Quick validation for development",
+      "global_timeout": 15.0,
+      "continue_on_failure": true,
+      "parallel_execution": true,
+      "validators": {
+        "protocol": {
+          "enabled": true,
+          "required": true,
+          "timeout": 10.0
+        },
+        "capabilities": {
+          "enabled": true,
+          "required": false,
+          "timeout": 5.0,
+          "parameters": {
+            "max_items_to_list": 10
+          }
+        }
+      }
+    },
+    "ci_pipeline": {
+      "description": "Validation suitable for CI/CD pipelines",
+      "global_timeout": 30.0,
+      "continue_on_failure": false,
+      "parallel_execution": false,
+      "validators": {
+        "protocol": {
+          "enabled": true,
+          "required": true
+        },
+        "capabilities": {
+          "enabled": true,
+          "required": true
+        },
+        "errors": {
+          "enabled": true,
+          "required": false
+        }
+      }
+    }
+  }
+}
