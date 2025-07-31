@@ -1,28 +1,31 @@
 """MCP validation framework.
 
-This package provides both a modern plugin-based validation framework
-and backward compatibility with the original validation API.
+A modern, plugin-based validation framework for MCP (Model Context Protocol) servers.
+Provides comprehensive testing of protocol compliance, capabilities, and security.
 """
 
-import asyncio
 from typing import List, Dict, Any, Optional
 
-# New modular architecture
+# Core components
 from .core.validator import MCPValidationOrchestrator, ValidatorRegistry
 from .core.result import ValidationSession, MCPValidationResult, ValidatorResult, ValidationContext
 from .core.transport import JSONRPCTransport
+
+# Configuration system
 from .config.settings import ConfigurationManager, ValidationProfile, ValidatorConfig, load_config_from_env
+
+# Validator framework
 from .validators.base import BaseValidator
+
+# Reporting
 from .reporting.console import ConsoleReporter
 from .reporting.json_report import JSONReporter
-from .cli.main import cli_main
 
-# Backward compatibility imports
-from .legacy import MCPServerValidator, validate_mcp_server_command, generate_json_report, save_json_report
+# CLI interface
+from .cli.main import cli_main
 
 __version__ = "2.0.0"
 
-# New API exports
 __all__ = [
     # Core components
     'MCPValidationOrchestrator',
@@ -49,15 +52,11 @@ __all__ = [
     # CLI
     'cli_main',
     
-    # Legacy compatibility
-    'MCPServerValidator',
-    'validate_mcp_server_command',
-    'generate_json_report',
-    'save_json_report',
+    # Convenience function
+    'validate_server',
 ]
 
 
-# Convenience function for simple validation
 async def validate_server(
     command_args: List[str], 
     env_vars: Optional[Dict[str, str]] = None,
@@ -65,16 +64,30 @@ async def validate_server(
     config_file: Optional[str] = None
 ) -> ValidationSession:
     """
-    Simple validation function using the new architecture.
+    Validate an MCP server with the specified configuration.
+    
+    This is a convenience function that sets up the validation orchestrator
+    and runs a complete validation session.
     
     Args:
         command_args: Command and arguments to execute the MCP server
-        env_vars: Optional environment variables
+        env_vars: Optional environment variables for the server process
         profile_name: Validation profile to use (defaults to 'comprehensive')
-        config_file: Path to configuration file
+        config_file: Path to configuration file (optional)
     
     Returns:
-        ValidationSession with results
+        ValidationSession containing complete validation results
+        
+    Example:
+        ```python
+        session = await validate_server(["python", "my_server.py"])
+        if session.overall_success:
+            print("✅ Server is MCP compliant!")
+        else:
+            print("❌ Validation failed:")
+            for error in session.errors:
+                print(f"  - {error}")
+        ```
     """
     if config_file:
         config_manager = ConfigurationManager(config_file)

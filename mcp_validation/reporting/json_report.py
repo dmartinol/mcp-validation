@@ -139,15 +139,3 @@ class JSONReporter:
         
         print(f"📋 JSON report saved to: {filename}")
     
-    def generate_legacy_report(
-        self, 
-        session: ValidationSession, 
-        command_args: List[str], 
-        env_vars: Optional[Dict[str, str]] = None
-    ) -> Dict[str, Any]:
-        """Generate a report compatible with the legacy format."""
-        legacy_result = session.to_legacy_result()
-        
-        # Use the existing legacy report generation logic
-        from .. import generate_json_report
-        return generate_json_report(legacy_result, command_args, env_vars)

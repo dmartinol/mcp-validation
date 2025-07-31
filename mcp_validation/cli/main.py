@@ -130,11 +130,11 @@ Environment Variables:
         help='Global timeout override'
     )
     
-    # Legacy compatibility
+    # Security options
     parser.add_argument(
         '--skip-mcp-scan',
         action='store_true',
-        help='Skip mcp-scan security analysis (legacy compatibility)'
+        help='Skip mcp-scan security analysis'
     )
     
     return parser
@@ -185,7 +185,7 @@ async def main():
             else:
                 print(f"Warning: Unknown validator '{validator_name}' - ignoring")
         
-        # Legacy compatibility: disable security if --skip-mcp-scan is used
+        # Disable security if --skip-mcp-scan is used
         if args.skip_mcp_scan and "security" in active_profile.validators:
             active_profile.validators["security"].enabled = False
         
