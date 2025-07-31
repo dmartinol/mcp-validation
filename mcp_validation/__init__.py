@@ -15,7 +15,7 @@ from .config.settings import ConfigurationManager, ValidationProfile, ValidatorC
 from .validators.base import BaseValidator
 from .reporting.console import ConsoleReporter
 from .reporting.json_report import JSONReporter
-from .cli.main import main as cli_main
+from .cli.main import cli_main
 
 # Backward compatibility imports
 from .legacy import MCPServerValidator, validate_mcp_server_command, generate_json_report, save_json_report
