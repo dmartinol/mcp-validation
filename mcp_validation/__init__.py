@@ -26,6 +26,7 @@ class MCPValidationResult:
     mcp_scan_results: Dict[str, Any] = None
     checklist: Dict[str, Any] = None
     mcp_scan_file: str = None
+    ping_result: Dict[str, Any] = None
 
 
 class MCPServerValidator:
@@ -85,6 +86,7 @@ class MCPServerValidator:
         resources = []
         mcp_scan_results = None
         mcp_scan_file = None
+        ping_result = None
         
         # Initialize checklist
         checklist = {
@@ -94,7 +96,8 @@ class MCPServerValidator:
                 "protocol_version": {"status": "pending", "details": "Check protocol version compatibility"},
                 "server_info": {"status": "pending", "details": "Validate server information fields"},
                 "capabilities": {"status": "pending", "details": "Validate capabilities structure"},
-                "initialized_notification": {"status": "pending", "details": "Send initialized notification"}
+                "initialized_notification": {"status": "pending", "details": "Send initialized notification"},
+                "ping_test": {"status": "pending", "details": "Test optional ping functionality"}
             },
             "capability_testing": {
                 "resources_capability": {"status": "pending", "details": "Test resources capability if advertised"},
@@ -124,6 +127,9 @@ class MCPServerValidator:
             
             # Perform MCP protocol validation
             is_valid = await self._validate_protocol(process, errors, warnings, server_info, capabilities, tools, prompts, resources, checklist)
+            
+            # Test ping protocol (optional, doesn't affect validation result)
+            ping_result = await self._test_ping_protocol(process, warnings, checklist)
             
             # Run mcp-scan if available and protocol validation passed
             if self.use_mcp_scan:
@@ -175,7 +181,8 @@ class MCPServerValidator:
             resources=resources,
             mcp_scan_results=mcp_scan_results,
             checklist=checklist,
-            mcp_scan_file=mcp_scan_file
+            mcp_scan_file=mcp_scan_file,
+            ping_result=ping_result
         )
     
     async def _validate_protocol(
@@ -434,6 +441,79 @@ class MCPServerValidator:
             warnings.append(f"{method} request failed: {str(e)}")
             print(f"    ❌ {method} failed: {str(e)}")
     
+    async def _test_ping_protocol(self, process: asyncio.subprocess.Process, warnings: List[str], checklist: Dict[str, Any]) -> Dict[str, Any]:
+        """Test optional ping protocol functionality."""
+        print("🔄 Step 3.5: Testing ping protocol...")
+        checklist["protocol_validation"]["ping_test"]["status"] = "running"
+        
+        ping_result = {
+            "supported": False,
+            "response_time_ms": None,
+            "error": None
+        }
+        
+        try:
+            # Send ping request
+            ping_request = self._create_jsonrpc_request("ping")
+            start_time = time.time()
+            
+            process.stdin.write(ping_request.encode())
+            await process.stdin.drain()
+            
+            # Read response with shorter timeout for ping
+            try:
+                response_line = await asyncio.wait_for(
+                    process.stdout.readline(),
+                    timeout=5.0
+                )
+                end_time = time.time()
+                response_time_ms = (end_time - start_time) * 1000
+                
+                response = self._parse_jsonrpc_response(response_line.decode())
+                
+                if "error" in response:
+                    # Ping not supported - this is expected and not a problem
+                    error_code = response["error"].get("code", 0)
+                    error_message = response["error"].get("message", "Unknown error")
+                    
+                    if error_code == -32601:  # Method not found
+                        ping_result["error"] = "Method not supported"
+                        print("    ℹ️  Ping not supported (method not found)")
+                        warnings.append("Ping protocol not supported by server (optional feature)")
+                        checklist["protocol_validation"]["ping_test"]["status"] = "skipped"
+                    else:
+                        ping_result["error"] = f"Error {error_code}: {error_message}"
+                        print(f"    ⚠️  Ping error: {error_message}")
+                        warnings.append(f"Ping protocol error: {error_message}")
+                        checklist["protocol_validation"]["ping_test"]["status"] = "warning"
+                
+                elif "result" in response:
+                    # Ping supported and successful
+                    ping_result["supported"] = True
+                    ping_result["response_time_ms"] = round(response_time_ms, 2)
+                    print(f"    ✅ Ping successful ({ping_result['response_time_ms']:.2f}ms)")
+                    checklist["protocol_validation"]["ping_test"]["status"] = "passed"
+                    
+                else:
+                    ping_result["error"] = "Invalid ping response format"
+                    print("    ⚠️  Invalid ping response format")
+                    warnings.append("Ping response missing result or error field")
+                    checklist["protocol_validation"]["ping_test"]["status"] = "warning"
+                    
+            except asyncio.TimeoutError:
+                ping_result["error"] = "Ping request timed out"
+                print("    ⚠️  Ping request timed out")
+                warnings.append("Ping request timed out (optional feature)")
+                checklist["protocol_validation"]["ping_test"]["status"] = "warning"
+                
+        except Exception as e:
+            ping_result["error"] = f"Ping test failed: {str(e)}"
+            print(f"    ⚠️  Ping test failed: {str(e)}")
+            warnings.append(f"Ping test failed: {str(e)}")
+            checklist["protocol_validation"]["ping_test"]["status"] = "warning"
+        
+        return ping_result
+    
     async def _run_mcp_scan(self, command_args: List[str], env_vars: Dict[str, str] = None, errors: List[str] = None, warnings: List[str] = None, checklist: Dict[str, Any] = None) -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
         """Run mcp-scan security analysis on the server."""
         if checklist:
@@ -647,6 +727,12 @@ def generate_json_report(result: MCPValidationResult, command_args: List[str], e
             }
         },
         "validation_checklist": result.checklist,
+        "ping_protocol": {
+            "tested": result.ping_result is not None,
+            "supported": result.ping_result.get("supported", False) if result.ping_result else False,
+            "response_time_ms": result.ping_result.get("response_time_ms") if result.ping_result else None,
+            "error": result.ping_result.get("error") if result.ping_result else None
+        },
         "security_analysis": {
             "mcp_scan_executed": result.mcp_scan_results is not None,
             "mcp_scan_file": result.mcp_scan_file,
@@ -798,6 +884,18 @@ async def main():
         
         if result.resources:
             print(f"📁 Resources ({len(result.resources)}): {', '.join(result.resources)}")
+        
+        # Display ping results
+        if result.ping_result:
+            if result.ping_result.get("supported"):
+                response_time = result.ping_result.get("response_time_ms", 0)
+                print(f"🏓 Ping: Supported ({response_time:.2f}ms)")
+            elif result.ping_result.get("error"):
+                error = result.ping_result.get("error")
+                if "not supported" in error.lower():
+                    print("🏓 Ping: Not supported (optional)")
+                else:
+                    print(f"🏓 Ping: {error}")
         
         # Display mcp-scan results if available
         if result.mcp_scan_results:
