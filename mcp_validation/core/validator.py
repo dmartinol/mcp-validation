@@ -282,7 +282,7 @@ class MCPValidationOrchestrator:
                 if process.stdin:
                     process.stdin.close()
                     await process.stdin.wait_closed()
-            except:
+            except Exception:
                 pass
 
             process.terminate()

@@ -31,16 +31,16 @@ def create_argument_parser() -> argparse.ArgumentParser:
 Configuration Examples:
   # Use default comprehensive profile
   mcp-validate -- npx @dynatrace-oss/dynatrace-mcp-server
-  
-  # Use specific profile  
+
+  # Use specific profile
   mcp-validate --profile security_focused -- python server.py
-  
+
   # Use custom config file
   mcp-validate --config ./my-config.json -- node server.js
-  
+
   # Override specific validators
   mcp-validate --enable ping --disable security -- ./server
-  
+
   # List available profiles and validators
   mcp-validate --list-profiles
   mcp-validate --list-validators

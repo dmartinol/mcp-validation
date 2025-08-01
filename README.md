@@ -316,20 +316,20 @@ uv pip install -e ".[dev]"
 # Run all tests
 make test
 # OR manually:
-uv run --extra dev pytest -v --ignore=tmp_evaluation --ignore=partner
+uv run --extra dev pytest tests/ -v
 
 # Run tests with coverage
 make test-cov
 # OR manually:
-uv run --extra dev pytest --cov=mcp_validation --cov-report=term-missing
+uv run --extra dev pytest tests/ --cov=mcp_validation --cov-report=term-missing
 
 # Run specific test file
-uv run --extra dev pytest test_enhanced_registry.py -v
+uv run --extra dev pytest tests/test_enhanced_registry.py -v
 
 # Run tests and stop on first failure
 make test-fast
 # OR manually:
-uv run --extra dev pytest -x --ignore=tmp_evaluation --ignore=partner
+uv run --extra dev pytest tests/ -x
 ```
 
 ### Code Formatting and Linting
@@ -371,7 +371,7 @@ make ci
 # Manual pre-commit workflow
 uv run --extra dev black mcp_validation/ && \
 uv run --extra dev ruff check --fix mcp_validation/ && \
-uv run --extra dev pytest -v --ignore=tmp_evaluation --ignore=partner
+uv run --extra dev pytest tests/ -v
 ```
 
 ### Development Guidelines
@@ -385,7 +385,7 @@ uv run --extra dev pytest -v --ignore=tmp_evaluation --ignore=partner
 
 The project uses pytest with the following configuration in `pyproject.toml`:
 
-- **Test Discovery**: Looks for `test_*.py` files and `tests/` directory
+- **Test Discovery**: Looks for tests in the `tests/` directory
 - **Async Support**: Configured for async/await testing
 - **Exclusions**: Automatically excludes partner repositories and build directories
 - **Markers**: Strict marker checking enabled
@@ -400,10 +400,10 @@ make debug-test
 uv run --extra dev pytest -v -s
 
 # Run specific test with debugging
-uv run --extra dev pytest test_enhanced_registry.py::test_enhanced_registry_validator -v -s
+uv run --extra dev pytest tests/test_enhanced_registry.py::test_enhanced_registry_validator -v -s
 
 # Enable registry debug logging during tests
-MCP_REGISTRY_DEBUG=1 uv run --extra dev pytest test_enhanced_registry.py -v
+MCP_REGISTRY_DEBUG=1 uv run --extra dev pytest tests/test_enhanced_registry.py -v
 ```
 
 ## Examples

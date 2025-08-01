@@ -79,11 +79,9 @@ class SecurityValidator(BaseValidator):
                 data["tools_scanned"] = tools_scanned
                 data["vulnerabilities_found"] = len(vulnerabilities)
                 data["vulnerability_types"] = list(
-                    set(v.get("type", "unknown") for v in vulnerabilities)
+                    {v.get("type", "unknown") for v in vulnerabilities}
                 )
-                data["risk_levels"] = list(
-                    set(v.get("severity", "unknown") for v in vulnerabilities)
-                )
+                data["risk_levels"] = list({v.get("severity", "unknown") for v in vulnerabilities})
 
                 # Check vulnerability threshold
                 threshold = self.config.get("vulnerability_threshold", "high")
@@ -181,7 +179,7 @@ class SecurityValidator(BaseValidator):
             # Clean up temporary config file
             try:
                 os.unlink(config_path)
-            except:
+            except Exception:
                 pass
 
     def _parse_scan_results(self, scan_results: Dict[str, Any]) -> Tuple[int, List[Dict[str, Any]]]:
@@ -189,7 +187,7 @@ class SecurityValidator(BaseValidator):
         tools_scanned = 0
         vulnerabilities = []
 
-        for config_path, config_data in scan_results.items():
+        for _config_path, config_data in scan_results.items():
             if "servers" in config_data:
                 for server in config_data["servers"]:
                     signature = server.get("signature", {})
