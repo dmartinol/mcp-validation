@@ -170,3 +170,8 @@ mcp-scan-results_*.json
 
 # Test results and reports
 test-*.json
+
+# Development and debug scripts
+debug_*.py
+check_*.py
+enhance_*.py
