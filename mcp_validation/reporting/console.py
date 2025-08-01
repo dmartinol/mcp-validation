@@ -1,41 +1,44 @@
 """Console reporting for MCP validation results."""
 
-from typing import Dict, Any, List
+from typing import Any, Dict
+
 from ..core.result import ValidationSession, ValidatorResult
 
 
 class ConsoleReporter:
     """Formats and displays validation results to console."""
-    
+
     def __init__(self, verbose: bool = False):
         self.verbose = verbose
-    
+
     def report_session(self, session: ValidationSession) -> None:
         """Report a complete validation session to console."""
         print(f"✓ Valid: {session.overall_success}")
         print(f"⏱ Execution time: {session.execution_time:.2f}s")
         print(f"📋 Profile: {session.profile_name}")
-        
+
         # Report individual validator results
         for result in session.validator_results:
             self._report_validator_result(result)
-        
+
         # Report overall errors and warnings
         if session.errors:
             print("\n❌ Errors:")
             for error in session.errors:
                 print(f"  - {error}")
-        
+
         if session.warnings and (self.verbose or not session.overall_success):
             print("\n⚠️  Warnings:")
             for warning in session.warnings:
                 print(f"  - {warning}")
-    
+
     def _report_validator_result(self, result: ValidatorResult) -> None:
         """Report results from a single validator."""
         status_icon = "✅" if result.passed else "❌"
-        print(f"{status_icon} {result.validator_name.title()}: {'Passed' if result.passed else 'Failed'}")
-        
+        print(
+            f"{status_icon} {result.validator_name.title()}: {'Passed' if result.passed else 'Failed'}"
+        )
+
         # Report validator-specific data
         if result.validator_name == "protocol":
             self._report_protocol_data(result.data)
@@ -47,29 +50,29 @@ class ConsoleReporter:
             self._report_errors_data(result.data)
         elif result.validator_name == "security":
             self._report_security_data(result.data)
-        
+
         # Report errors and warnings if verbose or validator failed
         if result.errors and (self.verbose or not result.passed):
             for error in result.errors:
                 print(f"    ❌ {error}")
-        
+
         if result.warnings and self.verbose:
             for warning in result.warnings:
                 print(f"    ⚠️  {warning}")
-    
+
     def _report_protocol_data(self, data: Dict[str, Any]) -> None:
         """Report protocol validation specific data."""
         server_info = data.get("server_info", {})
         if server_info:
-            name = server_info.get('name', 'Unknown')
-            version = server_info.get('version', 'Unknown')
+            name = server_info.get("name", "Unknown")
+            version = server_info.get("version", "Unknown")
             print(f"    🖥 Server: {name} v{version}")
-        
+
         capabilities = data.get("capabilities", {})
         if capabilities:
             caps = list(capabilities.keys())
             print(f"    🔧 Capabilities: {', '.join(caps)}")
-    
+
     def _report_capabilities_data(self, data: Dict[str, Any]) -> None:
         """Report capabilities validation specific data."""
         tools = data.get("tools", [])
@@ -77,19 +80,19 @@ class ConsoleReporter:
             print(f"    🔨 Tools ({len(tools)}): {', '.join(tools[:5])}")
             if len(tools) > 5:
                 print(f"        ... and {len(tools) - 5} more")
-        
+
         prompts = data.get("prompts", [])
         if prompts:
             print(f"    💬 Prompts ({len(prompts)}): {', '.join(prompts[:5])}")
             if len(prompts) > 5:
                 print(f"        ... and {len(prompts) - 5} more")
-        
+
         resources = data.get("resources", [])
         if resources:
             print(f"    📁 Resources ({len(resources)}): {', '.join(resources[:5])}")
             if len(resources) > 5:
                 print(f"        ... and {len(resources) - 5} more")
-    
+
     def _report_ping_data(self, data: Dict[str, Any]) -> None:
         """Report ping validation specific data."""
         if data.get("supported"):
@@ -101,35 +104,35 @@ class ConsoleReporter:
                 print("    🏓 Ping: Not supported (optional)")
             else:
                 print(f"    🏓 Ping: {error}")
-    
+
     def _report_errors_data(self, data: Dict[str, Any]) -> None:
         """Report error compliance validation specific data."""
         invalid_method = data.get("invalid_method_test", {})
         malformed_request = data.get("malformed_request_test", {})
         compliance_issues = data.get("compliance_issues", [])
-        
+
         passed_tests = []
         if invalid_method.get("passed"):
             passed_tests.append("invalid method")
         if malformed_request.get("passed"):
             passed_tests.append("malformed request")
-        
+
         if passed_tests:
             tests_str = " & ".join(passed_tests)
             print(f"    ⚠️  Error compliance: {tests_str} handling validated")
-        
+
         if compliance_issues:
             issue_count = len(compliance_issues)
             print(f"    ⚠️  Error compliance: {issue_count} format issue(s) detected")
-    
+
     def _report_security_data(self, data: Dict[str, Any]) -> None:
         """Report security validation specific data."""
         tools_scanned = data.get("tools_scanned", 0)
         vulnerabilities_found = data.get("vulnerabilities_found", 0)
-        
+
         if vulnerabilities_found > 0:
             print(f"    🔍 Security: {vulnerabilities_found} issues found in {tools_scanned} tools")
-            
+
             # Show vulnerability types if available
             vuln_types = data.get("vulnerability_types", [])
             if vuln_types:
@@ -139,7 +142,7 @@ class ConsoleReporter:
                 print(f"        🚨 Issues: {types_str}")
         else:
             print(f"    🔍 Security: No issues found in {tools_scanned} tools")
-        
+
         scan_file = data.get("scan_file")
         if scan_file:
             print(f"        💾 Report saved: {scan_file}")
@@ -152,9 +155,11 @@ def print_profile_info(config_manager) -> None:
         profile = config_manager.profiles[profile_name]
         active_marker = " (active)" if profile_name == config_manager.active_profile else ""
         print(f"  {profile_name}{active_marker}: {profile.description}")
-        
+
         if profile_name == config_manager.active_profile:
-            enabled_validators = [name for name, config in profile.validators.items() if config.enabled]
+            enabled_validators = [
+                name for name, config in profile.validators.items() if config.enabled
+            ]
             print(f"    Validators: {', '.join(enabled_validators)}")
 
 

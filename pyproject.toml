@@ -30,7 +30,9 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 requires-python = ">=3.8"
-dependencies = []
+dependencies = [
+    "aiohttp>=3.8.0",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -112,5 +114,17 @@ minversion = "7.0"
 addopts = "-ra -q --strict-markers"
 testpaths = [
     "tests",
+    "test_*.py",
+]
+norecursedirs = [
+    "tmp_evaluation",
+    "partner",
+    "examples",
+    "dist",
+    "build",
+    ".git",
+    ".venv",
+    "venv",
+    "node_modules",
 ]
 asyncio_mode = "auto"

@@ -247,19 +247,163 @@ For servers listed in the [MCP Registry](https://github.com/modelcontextprotocol
 
 ## Development
 
+### Prerequisites
+
+This project uses [uv](https://docs.astral.sh/uv/) for dependency management and development workflows.
+
 ```bash
-# Install development dependencies
-pip install -e ".[dev]"
+# Install uv (if not already installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Clone the repository
+git clone https://github.com/modelcontextprotocol/mcp-validation
+cd mcp-validation
+```
+
+### Quick Start with Makefile
+
+For convenience, this project includes a Makefile with common development tasks:
+
+```bash
+# Setup development environment
+make install
+
+# Run the full pre-commit workflow (format, lint, test)
+make pre-commit
 
 # Run tests
-pytest
+make test
 
-# Code formatting
-black .
-ruff check .
+# Format code
+make format
 
-# Type checking
-mypy .
+# See all available commands
+make help
+```
+
+### Manual Setup
+
+```bash
+# Install all dependencies including dev extras
+uv sync --extra dev
+
+# Alternatively, install the package in development mode
+uv pip install -e ".[dev]"
+```
+
+### Available Make Commands
+
+| Command | Description |
+|---------|-------------|
+| `make help` | Show all available commands |
+| `make install` | Install dependencies with dev extras |
+| `make dev-setup` | Complete development environment setup |
+| `make test` | Run all tests (excluding partner repos) |
+| `make test-cov` | Run tests with coverage report |
+| `make test-fast` | Run tests with fail-fast (-x flag) |
+| `make debug-test` | Run tests with debug output and registry logging |
+| `make format` | Format code with Black |
+| `make check` | Check formatting without making changes |
+| `make lint` | Check code with Ruff (no fixes) |
+| `make lint-fix` | Check and fix code issues with Ruff |
+| `make pre-commit` | Run full pre-commit workflow (format, lint, test) |
+| `make ci` | Run CI-like checks (no automatic fixes) |
+| `make clean` | Clean up cache and temporary files |
+
+### Manual Testing Commands
+
+```bash
+# Run all tests
+make test
+# OR manually:
+uv run --extra dev pytest -v --ignore=tmp_evaluation --ignore=partner
+
+# Run tests with coverage
+make test-cov
+# OR manually:
+uv run --extra dev pytest --cov=mcp_validation --cov-report=term-missing
+
+# Run specific test file
+uv run --extra dev pytest test_enhanced_registry.py -v
+
+# Run tests and stop on first failure
+make test-fast
+# OR manually:
+uv run --extra dev pytest -x --ignore=tmp_evaluation --ignore=partner
+```
+
+### Code Formatting and Linting
+
+```bash
+# Format code with Black
+make format
+# OR manually:
+uv run --extra dev black mcp_validation/
+
+# Check code formatting (without making changes)
+make check
+# OR manually:
+uv run --extra dev black --check mcp_validation/
+
+# Lint with Ruff (with fixes)
+make lint-fix
+# OR manually:
+uv run --extra dev ruff check --fix mcp_validation/
+
+# Lint with Ruff (check only)
+make lint
+# OR manually:
+uv run --extra dev ruff check mcp_validation/
+
+# Type checking with mypy
+uv run --extra dev mypy mcp_validation/
+```
+
+### Workflows
+
+```bash
+# Pre-commit workflow (format, lint, test)
+make pre-commit
+
+# CI-style checks (no automatic fixes)
+make ci
+
+# Manual pre-commit workflow
+uv run --extra dev black mcp_validation/ && \
+uv run --extra dev ruff check --fix mcp_validation/ && \
+uv run --extra dev pytest -v --ignore=tmp_evaluation --ignore=partner
+```
+
+### Development Guidelines
+
+1. **Testing**: All new features must include tests
+2. **Code Style**: Use Black for formatting and Ruff for linting
+3. **Type Hints**: Add type hints for all public APIs
+4. **Documentation**: Update README and docstrings for new features
+
+### Test Configuration
+
+The project uses pytest with the following configuration in `pyproject.toml`:
+
+- **Test Discovery**: Looks for `test_*.py` files and `tests/` directory
+- **Async Support**: Configured for async/await testing
+- **Exclusions**: Automatically excludes partner repositories and build directories
+- **Markers**: Strict marker checking enabled
+
+### Debugging Tests
+
+```bash
+# Run tests with debug output and registry logging
+make debug-test
+
+# Run tests with verbose output and debug information
+uv run --extra dev pytest -v -s
+
+# Run specific test with debugging
+uv run --extra dev pytest test_enhanced_registry.py::test_enhanced_registry_validator -v -s
+
+# Enable registry debug logging during tests
+MCP_REGISTRY_DEBUG=1 uv run --extra dev pytest test_enhanced_registry.py -v
 ```
 
 ## Examples
