@@ -23,7 +23,7 @@ help:
 	@echo "  test        Run all tests"
 	@echo "  test-cov    Run tests with coverage report"
 	@echo "  test-fast   Run tests with fail-fast (-x flag)"
-	@echo "  debug-test  Run tests with debug output and registry logging"
+	@echo "  debug-test  Run tests with debug output"
 	@echo ""
 	@echo "Workflows:"
 	@echo "  pre-commit  Run full pre-commit workflow (format, lint, test)"
@@ -75,7 +75,7 @@ test-fast:
 
 debug-test:
 	@echo "Running tests with debug output..."
-	MCP_REGISTRY_DEBUG=1 uv run --extra dev pytest tests/ -v -s
+	uv run --extra dev pytest tests/ -v -s
 
 # Pre-commit workflow
 pre-commit:

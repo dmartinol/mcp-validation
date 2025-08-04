@@ -101,6 +101,10 @@ Environment Variables:
         "--verbose", action="store_true", help="Show detailed output including warnings"
     )
 
+    parser.add_argument(
+        "--debug", action="store_true", help="Enable detailed debug output with execution tracking"
+    )
+
     parser.add_argument("--timeout", type=float, metavar="SECONDS", help="Global timeout override")
 
     # Security options
@@ -180,7 +184,7 @@ async def main():
 
         # Run validation
         session = await orchestrator.validate_server(
-            command_args=args.command, env_vars=env_vars, profile_name=args.profile
+            command_args=args.command, env_vars=env_vars, profile_name=args.profile, debug=args.debug
         )
 
         # Display results
@@ -203,7 +207,7 @@ async def main():
         return 1
     except Exception as e:
         print(f"❌ Unexpected error: {e}")
-        if args.verbose:
+        if args.debug:
             import traceback
 
             traceback.print_exc()

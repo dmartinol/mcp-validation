@@ -6,6 +6,15 @@ import time
 from typing import Any, Dict, List, Optional, Type
 
 from ..config.settings import ConfigurationManager, ValidationProfile
+from ..utils.debug import (
+    log_execution_start, 
+    log_execution_step, 
+    log_execution_result,
+    log_validator_progress,
+    log_validation_summary,
+    debug_log,
+    set_debug_enabled
+)
 from ..validators.base import BaseValidator, ValidationContext, ValidatorResult
 from .result import ValidationSession
 from .transport import JSONRPCTransport
@@ -77,9 +86,13 @@ class MCPValidationOrchestrator:
         command_args: List[str],
         env_vars: Dict[str, str] = None,
         profile_name: Optional[str] = None,
+        debug: bool = False,
     ) -> ValidationSession:
         """Execute complete validation session against MCP server."""
 
+        # Set debug state based on CLI flag
+        set_debug_enabled(debug)
+        
         start_time = time.time()
         errors = []
         warnings = []
@@ -94,11 +107,17 @@ class MCPValidationOrchestrator:
             profile = self.config_manager.get_active_profile()
 
         try:
+            # Log execution start with full context
+            log_execution_start(command_args, env_vars)
+            
             # Start MCP server process
+            log_execution_step("Preparing environment")
             env = os.environ.copy()
             if env_vars:
                 env.update(env_vars)
+                log_execution_step(f"Added {len(env_vars)} environment variables")
 
+            log_execution_step("Creating subprocess", f"Command: {' '.join(command_args)}")
             process = await asyncio.create_subprocess_exec(
                 *command_args,
                 stdin=asyncio.subprocess.PIPE,
@@ -106,8 +125,11 @@ class MCPValidationOrchestrator:
                 stderr=asyncio.subprocess.PIPE,
                 env=env,
             )
+            
+            log_execution_step("Process started", f"PID: {process.pid}")
 
             # Create transport and validation context
+            log_execution_step("Setting up validation context")
             transport = JSONRPCTransport(process)
             context = ValidationContext(
                 process=process,
@@ -119,9 +141,14 @@ class MCPValidationOrchestrator:
             context.transport = transport
 
             # Create and configure validators
+            log_execution_step("Creating validators", f"Profile: {profile.name}")
             validators = self._create_validators(profile)
+            log_execution_step(f"Configured {len(validators)} validators", 
+                             f"Names: {[v.name for v in validators]}")
 
             # Execute validators
+            log_execution_step("Starting validation", 
+                             f"Mode: {'parallel' if profile.parallel_execution else 'sequential'}")
             if profile.parallel_execution:
                 validator_results = await self._execute_validators_parallel(
                     validators, context, profile
@@ -132,10 +159,14 @@ class MCPValidationOrchestrator:
                 )
 
             # Clean up process
+            log_execution_step("Cleaning up process")
             await self._cleanup_process(process)
+            log_execution_result(True, "Process execution completed")
 
         except Exception as e:
-            errors.append(f"Validation setup failed: {str(e)}")
+            error_msg = f"Validation setup failed: {str(e)}"
+            errors.append(error_msg)
+            log_execution_result(False, error_msg)
 
         # Determine overall success
         overall_success = self._determine_overall_success(validator_results, profile)
@@ -146,6 +177,11 @@ class MCPValidationOrchestrator:
             warnings.extend(result.warnings)
 
         execution_time = time.time() - start_time
+        
+        # Log validation summary
+        passed_count = sum(1 for r in validator_results if r.passed)
+        failed_count = len(validator_results) - passed_count
+        log_validation_summary(len(validator_results), passed_count, failed_count, execution_time)
 
         return ValidationSession(
             profile_name=profile.name,
@@ -216,19 +252,36 @@ class MCPValidationOrchestrator:
     ) -> List[ValidatorResult]:
         """Execute validators sequentially."""
         results = []
+        total_validators = len(validators)
 
-        for validator in validators:
+        for i, validator in enumerate(validators, 1):
             if not validator.is_applicable(context):
+                log_validator_progress(validator.name, "SKIPPED", "Not applicable for current context")
                 continue
+
+            log_validator_progress(validator.name, "STARTING", f"({i}/{total_validators})")
+            validator_start_time = time.time()
 
             try:
                 result = await validator.validate(context)
                 results.append(result)
+                
+                validator_execution_time = time.time() - validator_start_time
+                status = "PASSED" if result.passed else "FAILED"
+                details = f"Time: {validator_execution_time:.2f}s"
+                if result.errors:
+                    details += f", Errors: {len(result.errors)}"
+                if result.warnings:
+                    details += f", Warnings: {len(result.warnings)}"
+                
+                log_validator_progress(validator.name, status, details)
 
                 # Update context with results (for dependent validators)
                 if validator.name == "protocol":
                     context.server_info.update(result.data.get("server_info", {}))
                     context.capabilities.update(result.data.get("capabilities", {}))
+                    log_validator_progress(validator.name, "CONTEXT_UPDATED", 
+                                         "Server info and capabilities stored for dependent validators")
 
                 # Stop on required validator failure if configured
                 if (
@@ -236,20 +289,29 @@ class MCPValidationOrchestrator:
                     and validator.config.get("required")
                     and not result.passed
                 ):
+                    log_validator_progress(validator.name, "STOPPING", 
+                                         "Required validator failed and fail-fast is enabled")
                     break
 
             except Exception as e:
+                validator_execution_time = time.time() - validator_start_time
+                error_msg = f"Validator execution failed: {str(e)}"
+                log_validator_progress(validator.name, "ERROR", 
+                                     f"Exception after {validator_execution_time:.2f}s: {str(e)}")
+                
                 error_result = ValidatorResult(
                     validator_name=validator.name,
                     passed=False,
-                    errors=[f"Validator execution failed: {str(e)}"],
+                    errors=[error_msg],
                     warnings=[],
                     data={},
-                    execution_time=0.0,
+                    execution_time=validator_execution_time,
                 )
                 results.append(error_result)
 
                 if not profile.continue_on_failure and validator.config.get("required"):
+                    log_validator_progress(validator.name, "STOPPING", 
+                                         "Required validator failed with exception and fail-fast is enabled")
                     break
 
         return results

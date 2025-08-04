@@ -402,8 +402,37 @@ uv run --extra dev pytest -v -s
 # Run specific test with debugging
 uv run --extra dev pytest tests/test_enhanced_registry.py::test_enhanced_registry_validator -v -s
 
-# Enable registry debug logging during tests
-MCP_REGISTRY_DEBUG=1 uv run --extra dev pytest tests/test_enhanced_registry.py -v
+# Run registry tests with debug output
+mcp-validate --debug -- npm test
+```
+
+### Debugging MCP Validation
+
+The tool provides comprehensive debug output to track server execution progress:
+
+```bash
+# Enable debug output for detailed execution tracking
+mcp-validate --debug -- python server.py
+```
+
+**Debug output includes:**
+- **Execution Context**: Working directory, Python version, platform, user, shell
+- **Command Details**: Full command, arguments, executable path
+- **Environment Variables**: Custom variables (with sensitive value masking)
+- **Process Information**: PID, process lifecycle events
+- **Validator Progress**: Individual validator execution with timing and results
+- **Validation Summary**: Overall statistics and execution time
+
+**Example debug output:**
+```
+[10:19:29.872] [EXEC-INFO] 🚀 Starting MCP Server Process
+[10:19:29.872] [EXEC-INFO] 📁 Working Directory: /path/to/project
+[10:19:29.872] [EXEC-INFO] 🐍 Python: /usr/bin/python3 (v3.11.0)
+[10:19:29.872] [EXEC-INFO] 🔧 Command: npx @dynatrace-oss/dynatrace-mcp-server
+[10:19:29.872] [EXEC-INFO] 🌍 Environment Variables:
+[10:19:29.872] [EXEC-INFO]    API_KEY=ab*****ef
+[10:19:29.877] [VALIDATOR-INFO] 🔍 [registry] STARTING: (1/6)
+[10:19:30.727] [VALIDATOR-INFO] 🔍 [registry] PASSED: Time: 0.85s
 ```
 
 ## Examples

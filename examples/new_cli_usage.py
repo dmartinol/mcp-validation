@@ -101,8 +101,11 @@ Environment Variables:
     # Output options
     parser.add_argument(
         '--json-report',
+        nargs='?',
+        const='mcp-validate-report.json',
+        default=None,
         metavar='FILENAME',
-        help='Export detailed JSON report to specified file'
+        help='Export detailed JSON report (default: mcp-validate-report.json)'
     )
     
     parser.add_argument(

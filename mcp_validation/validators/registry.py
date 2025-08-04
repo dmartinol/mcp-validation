@@ -10,13 +10,12 @@ from typing import Any, Dict, List, Optional, Protocol
 import aiohttp
 
 from .base import BaseValidator, ValidationContext, ValidatorResult
+from ..utils.debug import debug_log as _debug_log
 
 
 def debug_log(message: str, level: str = "INFO") -> None:
-    """Log debug messages if debug mode is enabled."""
-    if os.environ.get("MCP_REGISTRY_DEBUG", "").lower() in ("1", "true", "yes"):
-        prefix = f"[REGISTRY-{level}]"
-        print(f"{prefix} {message}")
+    """Registry-specific debug logging wrapper."""
+    _debug_log(message, level, "REGISTRY")
 
 
 @dataclass
@@ -33,7 +32,7 @@ def extract_packages_from_command(command_args: List[str]) -> List[PackageInfo]:
     packages = []
 
     if not command_args:
-        debug_log("No command arguments provided")
+        debug_log("No command arguments provided", "INFO", "REGISTRY")
         return packages
 
     # Join command args to get full command

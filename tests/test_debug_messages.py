@@ -5,6 +5,7 @@ import asyncio
 import os
 from mcp_validation.validators.registry import RegistryValidator
 from mcp_validation.validators.base import ValidationContext
+from mcp_validation.utils.debug import set_debug_enabled
 
 
 async def test_debug_messages():
@@ -14,7 +15,7 @@ async def test_debug_messages():
     print("=" * 60)
     
     # Enable debug mode
-    os.environ['MCP_REGISTRY_DEBUG'] = '1'
+    set_debug_enabled(True)
     
     test_scenarios = [
         {
@@ -86,7 +87,7 @@ async def test_debug_messages():
     # Disable debug mode
     print(f"\n🔇 Testing with debug disabled")
     print("-" * 40)
-    os.environ['MCP_REGISTRY_DEBUG'] = '0'
+    set_debug_enabled(False)
     
     validator = RegistryValidator({
         "enabled": True,
@@ -98,13 +99,13 @@ async def test_debug_messages():
     print(f"Result: {'✅ PASS' if result.passed else '❌ FAIL'} (no debug output above)")
     
     print(f"\n📋 Debug Usage Instructions:")
-    print(f"To enable debug mode, set environment variable:")
-    print(f"  export MCP_REGISTRY_DEBUG=1")
-    print(f"  # or")
-    print(f"  MCP_REGISTRY_DEBUG=1 python your_script.py")
-    print(f"\nTo disable debug mode:")
-    print(f"  export MCP_REGISTRY_DEBUG=0")
-    print(f"  # or simply unset the variable")
+    print(f"To enable debug mode, use the --debug flag:")
+    print(f"  mcp-validate --debug -- python server.py")
+    print(f"  mcp-validate --debug -- npx mcp-server")
+    print(f"\nIn tests, use set_debug_enabled(True):")
+    print(f"  from mcp_validation.utils.debug import set_debug_enabled")
+    print(f"  set_debug_enabled(True)  # Enable debug output")
+    print(f"  set_debug_enabled(False) # Disable debug output")
 
 
 if __name__ == "__main__":
