@@ -66,7 +66,13 @@ class MCPValidationOrchestrator:
             from ..validators.protocol import ProtocolValidator
             from ..validators.registry import RegistryValidator
             from ..validators.security import SecurityValidator
+            from ..validators.repo import RepoAvailabilityValidator, LicenseValidator
 
+            # Register repository validators first (they have no dependencies)
+            self.registry.register(RepoAvailabilityValidator)
+            self.registry.register(LicenseValidator)
+            
+            # Register other validators
             self.registry.register(ProtocolValidator)
             self.registry.register(CapabilitiesValidator)
             self.registry.register(PingValidator)
@@ -221,8 +227,7 @@ class MCPValidationOrchestrator:
     def _sort_validators_by_dependencies(
         self, validators: List[BaseValidator]
     ) -> List[BaseValidator]:
-        """Sort validators by their dependencies."""
-        # Simple dependency resolution - could be enhanced
+        """Sort validators by their dependencies with repository validators first."""
         validator_map = {v.name: v for v in validators}
         sorted_validators = []
         processed = set()
@@ -239,6 +244,13 @@ class MCPValidationOrchestrator:
             sorted_validators.append(validator)
             processed.add(validator.name)
 
+        # First, process repository validators explicitly (they should run first)
+        repo_validators = ["repo_availability", "license"]
+        for repo_validator_name in repo_validators:
+            if repo_validator_name in validator_map:
+                process_validator(validator_map[repo_validator_name])
+
+        # Then process all remaining validators
         for validator in validators:
             process_validator(validator)
 

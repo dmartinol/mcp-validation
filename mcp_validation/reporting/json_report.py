@@ -27,6 +27,8 @@ class JSONReporter:
         ping_result = None
         error_compliance = None
         security_analysis = {}
+        repo_availability = None
+        license_validation = None
 
         for result in session.validator_results:
             if result.validator_name == "protocol":
@@ -42,6 +44,10 @@ class JSONReporter:
                 error_compliance = result.data
             elif result.validator_name == "security":
                 security_analysis = result.data
+            elif result.validator_name == "repo_availability":
+                repo_availability = result.data
+            elif result.validator_name == "license":
+                license_validation = result.data
 
         # Build comprehensive report
         report = {
@@ -103,6 +109,25 @@ class JSONReporter:
                 "vulnerability_types": security_analysis.get("vulnerability_types", []),
                 "risk_levels": security_analysis.get("risk_levels", []),
                 "scan_file": security_analysis.get("scan_file"),
+            },
+            "repository_validation": {
+                "repo_availability": {
+                    "executed": repo_availability is not None,
+                    "repo_url": repo_availability.get("repo_url") if repo_availability else None,
+                    "is_git_repo": repo_availability.get("is_git_repo", False) if repo_availability else False,
+                    "clone_successful": repo_availability.get("clone_successful", False) if repo_availability else False,
+                    "has_readme": repo_availability.get("has_readme", False) if repo_availability else False,
+                    "has_license": repo_availability.get("has_license", False) if repo_availability else False,
+                    "readme_files": repo_availability.get("readme_files", []) if repo_availability else [],
+                    "license_files": repo_availability.get("license_files", []) if repo_availability else [],
+                },
+                "license_validation": {
+                    "executed": license_validation is not None,
+                    "license_detected": license_validation.get("license_detected", False) if license_validation else False,
+                    "license_type": license_validation.get("license_type") if license_validation else None,
+                    "license_acceptable": license_validation.get("license_acceptable", False) if license_validation else False,
+                    "license_files_found": license_validation.get("license_files_found", []) if license_validation else [],
+                },
             },
             "issues": {"errors": session.errors, "warnings": session.warnings},
         }

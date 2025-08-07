@@ -112,6 +112,11 @@ Environment Variables:
         "--skip-mcp-scan", action="store_true", help="Skip mcp-scan security analysis"
     )
 
+    # Repository validation options
+    parser.add_argument(
+        "--repo-url", metavar="URL", help="Repository URL to validate for OSS compliance"
+    )
+
     return parser
 
 
@@ -164,6 +169,29 @@ async def main():
         if args.skip_mcp_scan and "security" in active_profile.validators:
             active_profile.validators["security"].enabled = False
 
+        # Enable repository validators if --repo-url is provided
+        if args.repo_url:
+            # Add repo validators to profile if not already present
+            if "repo_availability" not in active_profile.validators:
+                from ..config.settings import ValidatorConfig
+                active_profile.validators["repo_availability"] = ValidatorConfig(
+                    enabled=True, required=True, timeout=30.0,
+                    parameters={"repo_url": args.repo_url, "clone_timeout": 30.0}
+                )
+            else:
+                active_profile.validators["repo_availability"].enabled = True
+                active_profile.validators["repo_availability"].parameters["repo_url"] = args.repo_url
+
+            if "license" not in active_profile.validators:
+                from ..config.settings import ValidatorConfig
+                active_profile.validators["license"] = ValidatorConfig(
+                    enabled=True, required=True, timeout=30.0,
+                    parameters={"repo_url": args.repo_url, "clone_timeout": 30.0}
+                )
+            else:
+                active_profile.validators["license"].enabled = True
+                active_profile.validators["license"].parameters["repo_url"] = args.repo_url
+
         # Override timeout
         if args.timeout:
             active_profile.global_timeout = args.timeout
@@ -174,6 +202,8 @@ async def main():
         # Display what we're testing
         print(f"Testing MCP server: {' '.join(args.command)}")
         print(f"Using profile: {active_profile.name}")
+        if args.repo_url:
+            print(f"Repository URL: {args.repo_url}")
         if env_vars:
             print("Environment variables:")
             for key, value in env_vars.items():
