@@ -29,6 +29,8 @@ class JSONReporter:
         security_analysis = {}
         repo_availability = None
         license_validation = None
+        runtime_exists = None
+        runtime_executable = None
 
         for result in session.validator_results:
             if result.validator_name == "protocol":
@@ -48,6 +50,10 @@ class JSONReporter:
                 repo_availability = result.data
             elif result.validator_name == "license":
                 license_validation = result.data
+            elif result.validator_name == "runtime_exists":
+                runtime_exists = result.data
+            elif result.validator_name == "runtime_executable":
+                runtime_executable = result.data
 
         # Build comprehensive report
         report = {
@@ -127,6 +133,24 @@ class JSONReporter:
                     "license_type": license_validation.get("license_type") if license_validation else None,
                     "license_acceptable": license_validation.get("license_acceptable", False) if license_validation else False,
                     "license_files_found": license_validation.get("license_files_found", []) if license_validation else [],
+                },
+            },
+            "runtime_validation": {
+                "runtime_exists": {
+                    "executed": runtime_exists is not None,
+                    "runtime_command": runtime_exists.get("runtime_command") if runtime_exists else None,
+                    "runtime_found": runtime_exists.get("runtime_found", False) if runtime_exists else False,
+                    "runtime_path": runtime_exists.get("runtime_path") if runtime_exists else None,
+                    "runtime_version": runtime_exists.get("runtime_version") if runtime_exists else None,
+                    "path_locations": runtime_exists.get("path_locations", []) if runtime_exists else [],
+                },
+                "runtime_executable": {
+                    "executed": runtime_executable is not None,
+                    "executable_check_passed": runtime_executable.get("executable_check_passed", False) if runtime_executable else False,
+                    "test_execution_successful": runtime_executable.get("test_execution_successful", False) if runtime_executable else False,
+                    "test_command_used": runtime_executable.get("test_command_used") if runtime_executable else None,
+                    "test_execution_time": runtime_executable.get("test_execution_time", 0) if runtime_executable else 0,
+                    "test_exit_code": runtime_executable.get("test_exit_code") if runtime_executable else None,
                 },
             },
             "issues": {"errors": session.errors, "warnings": session.warnings},

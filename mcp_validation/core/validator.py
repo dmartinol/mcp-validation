@@ -67,10 +67,15 @@ class MCPValidationOrchestrator:
             from ..validators.registry import RegistryValidator
             from ..validators.security import SecurityValidator
             from ..validators.repo import RepoAvailabilityValidator, LicenseValidator
+            from ..validators.runtime import RuntimeExistsValidator, RuntimeExecutableValidator
 
             # Register repository validators first (they have no dependencies)
             self.registry.register(RepoAvailabilityValidator)
             self.registry.register(LicenseValidator)
+            
+            # Register runtime validators (run after repo but before others)
+            self.registry.register(RuntimeExistsValidator)
+            self.registry.register(RuntimeExecutableValidator)
             
             # Register other validators
             self.registry.register(ProtocolValidator)
@@ -249,6 +254,12 @@ class MCPValidationOrchestrator:
         for repo_validator_name in repo_validators:
             if repo_validator_name in validator_map:
                 process_validator(validator_map[repo_validator_name])
+
+        # Then, process runtime validators (run after repo but before others)
+        runtime_validators = ["runtime_exists", "runtime_executable"]
+        for runtime_validator_name in runtime_validators:
+            if runtime_validator_name in validator_map:
+                process_validator(validator_map[runtime_validator_name])
 
         # Then process all remaining validators
         for validator in validators:

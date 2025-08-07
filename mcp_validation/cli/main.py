@@ -3,7 +3,7 @@
 import argparse
 import asyncio
 import sys
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from ..config.settings import ConfigurationManager, load_config_from_env
 from ..core.validator import MCPValidationOrchestrator
@@ -20,6 +20,43 @@ def parse_env_args(env_args: List[str]) -> Dict[str, str]:
         key, value = env_arg.split("=", 1)
         env_vars[key] = value
     return env_vars
+
+
+def detect_runtime_command(command_args: List[str]) -> Optional[str]:
+    """Auto-detect runtime command from MCP server command arguments."""
+    if not command_args:
+        return None
+    
+    first_command = command_args[0]
+    
+    # Direct runtime commands
+    runtime_commands = {
+        'uv', 'docker', 'npx', 'node', 'python', 'python3', 
+        'pip', 'java', 'mvn', 'gradle', 'go', 'cargo', 'rust'
+    }
+    
+    if first_command in runtime_commands:
+        return first_command
+    
+    # Check for common patterns
+    if first_command.endswith('python') or first_command.endswith('python3'):
+        return 'python3' if 'python3' in first_command else 'python'
+    
+    if first_command.endswith('node'):
+        return 'node'
+    
+    # Check for shebang or script patterns
+    if first_command.startswith('./') or first_command.endswith('.py'):
+        return 'python3'  # Assume Python for .py files
+    
+    if first_command.endswith('.js') or first_command.endswith('.mjs'):
+        return 'node'
+    
+    # Check for docker run patterns
+    if len(command_args) >= 2 and first_command == 'docker' and command_args[1] == 'run':
+        return 'docker'
+    
+    return None
 
 
 def create_argument_parser() -> argparse.ArgumentParser:
@@ -117,6 +154,11 @@ Environment Variables:
         "--repo-url", metavar="URL", help="Repository URL to validate for OSS compliance"
     )
 
+    # Runtime validation options
+    parser.add_argument(
+        "--runtime-command", metavar="COMMAND", help="Runtime command to validate (e.g., uv, docker, npx). If not specified, will be auto-detected from the MCP server command."
+    )
+
     return parser
 
 
@@ -192,6 +234,30 @@ async def main():
                 active_profile.validators["license"].enabled = True
                 active_profile.validators["license"].parameters["repo_url"] = args.repo_url
 
+        # Enable runtime validators based on command or --runtime-command
+        runtime_command = args.runtime_command or detect_runtime_command(args.command)
+        if runtime_command:
+            # Add runtime validators to profile if not already present
+            if "runtime_exists" not in active_profile.validators:
+                from ..config.settings import ValidatorConfig
+                active_profile.validators["runtime_exists"] = ValidatorConfig(
+                    enabled=True, required=True, timeout=10.0,
+                    parameters={"runtime_command": runtime_command}
+                )
+            else:
+                active_profile.validators["runtime_exists"].enabled = True
+                active_profile.validators["runtime_exists"].parameters["runtime_command"] = runtime_command
+
+            if "runtime_executable" not in active_profile.validators:
+                from ..config.settings import ValidatorConfig
+                active_profile.validators["runtime_executable"] = ValidatorConfig(
+                    enabled=True, required=True, timeout=10.0,
+                    parameters={"runtime_command": runtime_command, "execution_timeout": 10.0}
+                )
+            else:
+                active_profile.validators["runtime_executable"].enabled = True
+                active_profile.validators["runtime_executable"].parameters["runtime_command"] = runtime_command
+
         # Override timeout
         if args.timeout:
             active_profile.global_timeout = args.timeout
@@ -204,6 +270,8 @@ async def main():
         print(f"Using profile: {active_profile.name}")
         if args.repo_url:
             print(f"Repository URL: {args.repo_url}")
+        if runtime_command:
+            print(f"Runtime command: {runtime_command}")
         if env_vars:
             print("Environment variables:")
             for key, value in env_vars.items():
