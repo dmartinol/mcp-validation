@@ -17,13 +17,13 @@
 
 | Server Name | Status | Errors | Warnings | Report File |
 |-------------|---------|---------|----------|-------------|
-| hashicorp | ✅ Succeeded | 0 | 2 | terraform-mcp-server.json |
-| dynatrace-oss | ✅ Succeeded | 0 | 3 | dynatrace.json |
-| redis | ✅ Succeeded | 0 | 3 | redis.json |
-| redis-cloud | ✅ Succeeded | 0 | 3 | redis-cloud.json |
-| Couchbase-Ecosystem | ✅ Succeeded | 0 | 3 | mcp-server-couchbase.json |
-| elastic | ✅ Succeeded | 0 | 4 | elasticsearch.json |
-| jfrog | ✅ Succeeded | 0 | 3 | jfrog.json |
+| hashicorp | ✅ Succeeded | 0 | 2 | [terraform-mcp-server.json](terraform-mcp-server.json) |
+| dynatrace-oss | ✅ Succeeded | 0 | 3 | [dynatrace.json](dynatrace.json) |
+| redis | ✅ Succeeded | 0 | 3 | [redis.json](redis.json) |
+| redis-cloud | ✅ Succeeded | 0 | 3 | [redis-cloud.json](redis-cloud.json) |
+| Couchbase-Ecosystem | ✅ Succeeded | 0 | 3 | [mcp-server-couchbase.json](mcp-server-couchbase.json) |
+| elastic | ✅ Succeeded | 0 | 4 | [elasticsearch.json](elasticsearch.json) |
+| jfrog | ✅ Succeeded | 0 | 3 | [jfrog.json](jfrog.json) |
 
 ## Failed Validations Details
 
