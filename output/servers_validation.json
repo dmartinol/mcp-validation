@@ -1,0 +1,58 @@
+[
+  {
+    "Name": "hashicorp",
+    "Command": "uv run mcp-validate --json-report output/terraform-mcp-server.json -- podman run -i --rm quay.io/validated-mcp-servers/terraform-mcp-server:20250809-13ef8d0",
+    "Status": "Succeeded",
+    "Errors": 0,
+    "Warnings": 2,
+    "Report": "terraform-mcp-server.json"
+  },
+  {
+    "Name": "dynatrace-oss",
+    "Command": "uv run mcp-validate --env DT_ENVIRONMENT=https://test.apps.dynatrace.com --env OAUTH_CLIENT_ID=test-client-id --env OAUTH_CLIENT_SECRET=test-client-secret --env DT_PLATFORM_TOKEN=test-token --env SLACK_CONNECTION_ID=test-connection-id --json-report output/dynatrace.json -- podman run -i --rm quay.io/validated-mcp-servers/dynatrace:0.5.0-rc.2",
+    "Status": "Succeeded",
+    "Errors": 0,
+    "Warnings": 3,
+    "Report": "dynatrace.json"
+  },
+  {
+    "Name": "redis",
+    "Command": "uv run mcp-validate --env REDIS_HOST=127.0.0.1 --env REDIS_PORT=6379 --env REDIS_DB=0 --env REDIS_USERNAME=default --env REDIS_PWD=test-password --env REDIS_SSL=False --env REDIS_CERT_REQS=required --env REDIS_CLUSTER_MODE=False --json-report output/redis.json -- podman run -i --rm quay.io/validated-mcp-servers/redis:version0.3.0",
+    "Status": "Succeeded",
+    "Errors": 0,
+    "Warnings": 3,
+    "Report": "redis.json"
+  },
+  {
+    "Name": "redis-cloud",
+    "Command": "uv run mcp-validate --env API_KEY=test-api-key --env SECRET_KEY=test-secret-key --json-report output/redis-cloud.json -- podman run -i --rm quay.io/validated-mcp-servers/redis-cloud:1.0.0",
+    "Status": "Succeeded",
+    "Errors": 0,
+    "Warnings": 3,
+    "Report": "redis-cloud.json"
+  },
+  {
+    "Name": "Couchbase-Ecosystem",
+    "Command": "uv run mcp-validate --env CB_CONNECTION_STRING=couchbase://localhost --env CB_USERNAME=test-user --env CB_PASSWORD=test-password --env CB_BUCKET_NAME=test-bucket --env CB_MCP_READ_ONLY_QUERY_MODE=true --env CB_MCP_TRANSPORT=stdio --json-report output/mcp-server-couchbase.json -- podman run -i --rm quay.io/validated-mcp-servers/mcp-server-couchbase:0.4.0",
+    "Status": "Succeeded",
+    "Errors": 0,
+    "Warnings": 3,
+    "Report": "mcp-server-couchbase.json"
+  },
+  {
+    "Name": "elastic",
+    "Command": "uv run mcp-validate --env ES_URL=http://localhost:9200 --env ES_API_KEY=test-api-key --env ES_USERNAME=test-user --env ES_PASSWORD=test-password --env ES_SSL_SKIP_VERIFY=true --json-report output/elasticsearch.json -- podman run -i --rm quay.io/validated-mcp-servers/elasticsearch:20250809-5014d91 stdio",
+    "Status": "Succeeded",
+    "Errors": 0,
+    "Warnings": 4,
+    "Report": "elasticsearch.json"
+  },
+  {
+    "Name": "jfrog",
+    "Command": "uv run mcp-validate --env JFROG_ACCESS_TOKEN=test-access-token --env JFROG_URL=https://test.jfrog.com --env TRANSPORT=stdio --env PORT=8080 --env 'CORS_ORIGIN=*' --env LOG_LEVEL=INFO --env MAX_RECONNECT_ATTEMPTS=5 --env RECONNECT_DELAY_MS=2000 --json-report output/jfrog.json -- podman run -i --rm quay.io/validated-mcp-servers/jfrog:0.0.1",
+    "Status": "Succeeded",
+    "Errors": 0,
+    "Warnings": 3,
+    "Report": "jfrog.json"
+  }
+]

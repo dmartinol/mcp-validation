@@ -1,0 +1,488 @@
+[
+  {
+    "id": "8c7e5d4a-1b2a-4f3e-9d8c-7b6a5e4f3c2d",
+    "name": "hashicorp",
+    "description": "The Terraform MCP Server provides seamless integration with Terraform Registry APIs, enabling advanced automation and interaction capabilities for Infrastructure as Code (IaC) development.",
+    "repository": {
+      "url": "https://github.com/hashicorp/terraform-mcp-server",
+      "source": "github",
+      "id": "969282615"
+    },
+    "version_detail": {
+      "version": "20250809-13ef8d0",
+      "release_date": "2025-08-12",
+      "is_latest": true
+    },
+    "packages": [
+      {
+        "registry_name": "docker",
+        "name": "quay.io/validated-mcp-servers/terraform-mcp-server",
+        "version": "20250809-13ef8d0",
+        "environment_variables": [
+          {
+            "name": "TRANSPORT_MODE",
+            "description": "Set to 'streamable-http' to enable HTTP transport (legacy 'http' value still supported)",
+            "default": "stdio"
+          },
+          {
+            "name": "TRANSPORT_HOST",
+            "description": "Host to bind the HTTP server",
+            "default": "127.0.0.1"
+          },
+          {
+            "name": "TRANSPORT_PORT",
+            "description": "HTTP server port",
+            "default": "8080"
+          },
+          {
+            "name": "MCP_ENDPOINT",
+            "description": "HTTP server endpoint path",
+            "default": "/mcp"
+          },
+          {
+            "name": "MCP_SESSION_MODE",
+            "description": "Session mode: 'stateful' or 'stateless'",
+            "default": "stateful",
+            "choices": ["stateful", "stateless"]
+          },
+          {
+            "name": "MCP_ALLOWED_ORIGINS",
+            "description": "Comma-separated list of allowed origins for CORS",
+            "default": ""
+          },
+          {
+            "name": "MCP_CORS_MODE",
+            "description": "CORS mode: 'strict', 'development', or 'disabled'",
+            "default": "strict",
+            "choices": ["strict", "development", "disabled"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "9f8e7d6c-5b4a-3e2f-1c9d-8e7f6a5b4c3d",
+    "name": "dynatrace-oss",
+    "description": "This local MCP server allows interaction with the Dynatrace observability platform. Bring real-time observability data directly into your development workflow.",
+    "repository": {
+      "url": "https://github.com/dynatrace-oss/dynatrace-mcp",
+      "source": "github",
+      "id": "971357826"
+    },
+    "version_detail": {
+      "version": "0.5.0-rc.2",
+      "release_date": "2025-08-12",
+      "is_latest": true
+    },
+    "packages": [
+      {
+        "registry_name": "docker",
+        "name": "quay.io/validated-mcp-servers/dynatrace",
+        "version": "0.5.0-rc.2",
+        "environment_variables": [
+          {
+            "name": "DT_ENVIRONMENT",
+            "description": "URL to your Dynatrace Platform (do not use Dynatrace classic URLs)",
+            "is_required": true
+          },
+          {
+            "name": "OAUTH_CLIENT_ID",
+            "description": "Dynatrace OAuth Client ID",
+            "is_secret": true
+          },
+          {
+            "name": "OAUTH_CLIENT_SECRET",
+            "description": "Dynatrace OAuth Client Secret",
+            "is_secret": true
+          },
+          {
+            "name": "DT_PLATFORM_TOKEN",
+            "description": "Dynatrace Platform Token (limited support, as not all scopes are available)",
+            "is_secret": true
+          },
+          {
+            "name": "SLACK_CONNECTION_ID",
+            "description": "Connection ID of a Slack Connection for notifications"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "redis",
+    "description": "The Redis MCP Server is a natural language interface designed for agentic applications to efficiently manage and search data in Redis.",
+    "repository": {
+      "url": "https://github.com/redis/mcp-redis",
+      "source": "github",
+      "id": "959084910"
+    },
+    "version_detail": {
+      "version": "version0.3.0",
+      "release_date": "2025-08-12",
+      "is_latest": true
+    },
+    "packages": [
+      {
+        "registry_name": "docker",
+        "name": "quay.io/validated-mcp-servers/redis",
+        "version": "version0.3.0",
+        "environment_variables": [
+          {
+            "name": "REDIS_HOST",
+            "description": "Redis IP or hostname",
+            "default": "127.0.0.1"
+          },
+          {
+            "name": "REDIS_PORT",
+            "description": "Redis port",
+            "default": "6379"
+          },
+          {
+            "name": "REDIS_DB",
+            "description": "Database",
+            "default": "0"
+          },
+          {
+            "name": "REDIS_USERNAME",
+            "description": "Default database username",
+            "default": "default",
+            "is_secret": true
+          },
+          {
+            "name": "REDIS_PWD",
+            "description": "Default database password",
+            "default": "",
+            "is_secret": true
+          },
+          {
+            "name": "REDIS_SSL",
+            "description": "Enables or disables SSL/TLS",
+            "default": "False",
+            "choices": ["True", "False"]
+          },
+          {
+            "name": "REDIS_CA_PATH",
+            "description": "CA certificate for verifying server"
+          },
+          {
+            "name": "REDIS_SSL_KEYFILE",
+            "description": "Client's private key file for client authentication"
+          },
+          {
+            "name": "REDIS_SSL_CERTFILE",
+            "description": "Client's certificate file for client authentication"
+          },
+          {
+            "name": "REDIS_CERT_REQS",
+            "description": "Whether the client should verify the server's certificate",
+            "default": "required"
+          },
+          {
+            "name": "REDIS_CA_CERTS",
+            "description": "Path to the trusted CA certificates file"
+          },
+          {
+            "name": "REDIS_CLUSTER_MODE",
+            "description": "Enable Redis Cluster mode",
+            "default": "False",
+            "choices": ["True", "False"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e",
+    "name": "redis-cloud",
+    "description": "Model Context Protocol (MCP) Server for Redis Cloud's API, allowing you to manage your Redis Cloud resources using natural language.",
+    "repository": {
+      "url": "https://github.com/redis/mcp-redis-cloud",
+      "source": "github",
+      "id": "956477944"
+    },
+    "version_detail": {
+      "version": "20250809-5014d91",
+      "release_date": "2025-08-12",
+      "is_latest": true
+    },
+    "packages": [
+      {
+        "registry_name": "docker",
+        "name": "quay.io/validated-mcp-servers/redis-cloud",
+        "version": "1.0.0",
+        "environment_variables": [
+          {
+            "name": "API_KEY",
+            "description": "Redis Cloud API key",
+            "is_required": true,
+            "is_secret": true
+          },
+          {
+            "name": "SECRET_KEY",
+            "description": "Redis Cloud API secret key",
+            "is_required": true,
+            "is_secret": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f",
+    "name": "Couchbase-Ecosystem",
+    "description": "An MCP server implementation of Couchbase that allows LLMs to directly interact with Couchbase clusters.",
+    "repository": {
+      "url": "https://github.com/Couchbase-Ecosystem/mcp-server-couchbase",
+      "source": "github",
+      "id": "955488295"
+    },
+    "version_detail": {
+      "version": "0.4.0",
+      "release_date": "2025-08-12",
+      "is_latest": true
+    },
+    "packages": [
+      {
+        "registry_name": "docker",
+        "name": "quay.io/validated-mcp-servers/mcp-server-couchbase",
+        "version": "0.4.0",
+        "environment_variables": [
+          {
+            "name": "CB_CONNECTION_STRING",
+            "description": "Connection string to the Couchbase cluster",
+            "is_required": true
+          },
+          {
+            "name": "CB_USERNAME",
+            "description": "Username with bucket access",
+            "is_required": true,
+            "is_secret": true
+          },
+          {
+            "name": "CB_PASSWORD",
+            "description": "Password for authentication",
+            "is_required": true,
+            "is_secret": true
+          },
+          {
+            "name": "CB_BUCKET_NAME",
+            "description": "Name of the bucket to access",
+            "is_required": true
+          },
+          {
+            "name": "CB_MCP_READ_ONLY_QUERY_MODE",
+            "description": "Prevent data modification queries",
+            "default": "true",
+            "choices": ["true", "false"]
+          },
+          {
+            "name": "CB_MCP_TRANSPORT",
+            "description": "Transport mode: 'stdio', 'http', 'sse'",
+            "default": "stdio",
+            "choices": ["stdio", "http", "sse"]
+          },
+          {
+            "name": "CB_MCP_HOST",
+            "description": "Host for HTTP/SSE transport modes",
+            "default": "127.0.0.1"
+          },
+          {
+            "name": "CB_MCP_PORT",
+            "description": "Port for HTTP/SSE transport modes",
+            "default": "8000"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "4d5e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a",
+    "name": "elastic",
+    "description": "Connect to your Elasticsearch data directly from any MCP Client using the Model Context Protocol (MCP).",
+    "repository": {
+      "url": "https://github.com/elastic/mcp-server-elasticsearch",
+      "source": "github",
+      "id": "953992846"
+    },
+    "version_detail": {
+      "version": "20250809-5014d91",
+      "release_date": "2025-08-12",
+      "is_latest": true
+    },
+    "packages": [
+      {
+        "registry_name": "docker",
+        "name": "quay.io/validated-mcp-servers/elasticsearch",
+        "version": "20250809-5014d91",
+        "environment_variables": [
+          {
+            "name": "ES_URL",
+            "description": "The URL of your Elasticsearch cluster",
+            "is_required": true
+          },
+          {
+            "name": "ES_API_KEY",
+            "description": "Elasticsearch API key for authentication",
+            "is_secret": true
+          },
+          {
+            "name": "ES_USERNAME",
+            "description": "Elasticsearch username for basic authentication",
+            "is_secret": true
+          },
+          {
+            "name": "ES_PASSWORD",
+            "description": "Elasticsearch password for basic authentication",
+            "is_secret": true
+          },
+          {
+            "name": "ES_SSL_SKIP_VERIFY",
+            "description": "Skip SSL/TLS certificate verification when connecting to Elasticsearch",
+            "choices": ["true", "false"]
+          }
+        ],
+        "package_arguments": [
+          {
+            "description": "Protocol mode for MCP communication",
+            "is_required": true,
+            "format": "string",
+            "value": "stdio",
+            "type": "positional"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "5e6f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b",
+    "name": "jfrog",
+    "description": "Model Context Protocol (MCP) Server for the JFrog Platform API, enabling repository management, build tracking, release lifecycle management, and more.",
+    "repository": {
+      "url": "https://github.com/jfrog/mcp-jfrog",
+      "source": "github",
+      "id": "950087123"
+    },
+    "version_detail": {
+      "version": "0.0.1",
+      "release_date": "2025-08-12",
+      "is_latest": true
+    },
+    "packages": [
+      {
+        "registry_name": "docker",
+        "name": "quay.io/validated-mcp-servers/jfrog",
+        "version": "0.0.1",
+        "environment_variables": [
+          {
+            "name": "JFROG_ACCESS_TOKEN",
+            "description": "Your JFrog access token",
+            "is_required": true,
+            "is_secret": true
+          },
+          {
+            "name": "JFROG_URL",
+            "description": "Base URL for your JFrog platform",
+            "is_required": true
+          },
+          {
+            "name": "TRANSPORT",
+            "description": "Transport mode to use, set to 'sse' to enable SSE transport",
+            "default": "stdio",
+            "choices": ["stdio", "sse"]
+          },
+          {
+            "name": "PORT",
+            "description": "Port number to use for SSE transport",
+            "default": "8080"
+          },
+          {
+            "name": "CORS_ORIGIN",
+            "description": "CORS origin allowed for SSE connections",
+            "default": "*"
+          },
+          {
+            "name": "LOG_LEVEL",
+            "description": "Logging level: DEBUG, INFO, WARN, ERROR",
+            "default": "INFO",
+            "choices": ["DEBUG", "INFO", "WARN", "ERROR"]
+          },
+          {
+            "name": "MAX_RECONNECT_ATTEMPTS",
+            "description": "Maximum number of reconnection attempts for SSE server",
+            "default": "5"
+          },
+          {
+            "name": "RECONNECT_DELAY_MS",
+            "description": "Base delay in milliseconds between reconnection attempts",
+            "default": "2000"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "6f7a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c",
+    "name": "mulesoft",
+    "description": "MuleSOft MCP Server for managing MuleSoft resources and configurations.",
+    "repository": {
+      "url": "https://www.npmjs.com/package/@mulesoft/mcp-server",
+      "source": "npm",
+      "id": "N/A"
+    },
+    "version_detail": {
+      "version": "N/A",
+      "release_date": "2025-08-12",
+      "is_latest": true
+    },
+    "packages": []
+  },
+  {
+    "id": "7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "snyk",
+    "description": "Snyk MCP server provides Snyk security scanning capabilities directly into MCP-enabled agentic tools, bridging the gap between security scanning and AI-assisted workflows.",
+    "repository": {
+      "url": "https://github.com/snyk/snyk-ls",
+      "source": "github",
+      "id": "431904794"
+    },
+    "version_detail": {
+      "version": "N/A",
+      "release_date": "2025-08-12",
+      "is_latest": true
+    },
+    "packages": []
+  },
+  {
+    "id": "8b9c0d1e-2f3a-4b5c-6d7e-8f9a0b1c2d3e",
+    "name": "Unstructured-IO",
+    "description": "An MCP server implementation for interacting with the Unstructured API. This server provides tools to list sources and workflows.",
+    "repository": {
+      "url": "https://github.com/Unstructured-IO/UNS-MCP",
+      "source": "github",
+      "id": "947454003"
+    },
+    "version_detail": {
+      "version": "N/A",
+      "release_date": "2025-08-12",
+      "is_latest": true
+    },
+    "packages": []
+  },
+  {
+    "id": "9c0d1e2f-3a4b-5c6d-7e8f-9a0b1c2d3e4f",
+    "name": "IBM",
+    "description": "Using watsonx.ai Flows Engine with Model Context Protocol (MCP) for building AI applications with tool calling capabilities.",
+    "repository": {
+      "url": "https://github.com/IBM/wxflows",
+      "source": "github",
+      "id": "822793282"
+    },
+    "version_detail": {
+      "version": "N/A",
+      "release_date": "2025-08-12",
+      "is_latest": true
+    },
+    "packages": []
+  }
+]

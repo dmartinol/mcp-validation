@@ -1,0 +1,463 @@
+{
+  "report_metadata": {
+    "generated_at": "2025-08-12T17:53:20.116222",
+    "validator_version": "2.0.0",
+    "profile_used": "comprehensive",
+    "command": "podman run -i --rm -e DT_ENVIRONMENT=https://test.apps.dynatrace.com -e OAUTH_CLIENT_ID=test-client-id -e OAUTH_CLIENT_SECRET=test-client-secret -e DT_PLATFORM_TOKEN=test-token -e SLACK_CONNECTION_ID=test-connection-id quay.io/validated-mcp-servers/dynatrace:0.5.0-rc.2",
+    "environment_variables": {
+      "DT_ENVIRONMENT": "https://test.apps.dynatrace.com",
+      "OAUTH_CLIENT_ID": "test-client-id",
+      "OAUTH_CLIENT_SECRET": "test-client-secret",
+      "DT_PLATFORM_TOKEN": "test-token",
+      "SLACK_CONNECTION_ID": "test-connection-id"
+    }
+  },
+  "validation_summary": {
+    "overall_success": true,
+    "execution_time_seconds": 45.72664976119995,
+    "total_errors": 0,
+    "total_warnings": 3,
+    "validators_run": 10,
+    "validators_passed": 10
+  },
+  "server_information": {
+    "server_info": {
+      "name": "Dynatrace MCP Server",
+      "version": "0.5.0-rc.2"
+    },
+    "capabilities": {
+      "tools": {}
+    },
+    "discovered_items": {
+      "tools": {
+        "count": 0,
+        "names": []
+      },
+      "prompts": {
+        "count": 0,
+        "names": []
+      },
+      "resources": {
+        "count": 0,
+        "names": []
+      }
+    }
+  },
+  "validator_results": [
+    {
+      "validator_name": "runtime_exists",
+      "passed": true,
+      "execution_time_seconds": 0.016510963439941406,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "runtime_command": "podman",
+        "runtime_found": true,
+        "runtime_path": "/opt/homebrew/bin/podman",
+        "runtime_version": "podman version 5.5.2",
+        "path_locations": [
+          "/opt/homebrew/bin/podman"
+        ],
+        "search_paths": [
+          "/Users/dmartino/projects/AI/mcp/mcp-validation/.venv/bin",
+          "/Users/dmartino/.pyenv/versions/3.11.9/bin",
+          "/opt/homebrew/Cellar/pyenv/2.5.1/libexec",
+          "/opt/homebrew/Cellar/pyenv/2.5.1/plugins/python-build/bin",
+          "/Users/dmartino/.npm-global/bin",
+          "/Users/dmartino/Downloads/google-cloud-sdk/bin",
+          "/Users/dmartino/.krew/bin",
+          "/Users/dmartino/.jbang/bin",
+          "/Users/dmartino/.pyenv/shims",
+          "/Users/dmartino/miniconda3/condabin",
+          "/opt/homebrew/bin",
+          "/opt/homebrew/sbin",
+          "/usr/local/bin",
+          "/System/Cryptexes/App/usr/bin",
+          "/usr/bin",
+          "/bin",
+          "/usr/sbin",
+          "/sbin",
+          "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin",
+          "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin",
+          "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin",
+          "/usr/local/go/bin",
+          "/usr/local/munki",
+          "/Users/dmartino/.cursor/extensions/ms-python.debugpy-2025.8.0-darwin-arm64/bundled/scripts/noConfigScripts"
+        ]
+      }
+    },
+    {
+      "validator_name": "runtime_executable",
+      "passed": true,
+      "execution_time_seconds": 0.01801133155822754,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "runtime_command": "podman",
+        "executable_check_passed": true,
+        "permission_details": {
+          "file_path": "/opt/homebrew/bin/podman",
+          "exists": true,
+          "is_file": true,
+          "is_executable": true,
+          "owner_readable": true,
+          "owner_writable": false,
+          "owner_executable": true,
+          "group_readable": true,
+          "group_writable": false,
+          "group_executable": true,
+          "other_readable": true,
+          "other_writable": false,
+          "other_executable": true,
+          "file_mode": 33133,
+          "file_mode_octal": "0o555"
+        },
+        "test_execution_successful": true,
+        "test_command_used": "podman --help",
+        "test_output": "Manage pods, containers and images\n\nUsage:\n  podman [options] [command]\n\nAvailable Commands:\n  attach      Attach to a running container\n  build       Build an image using instructions from Containerfiles\n  commit      Create new image based on the changed container\n  compose     Run compose workloads via an external provider such as docker-compose or podman-compose\n  container   Manage containers\n  cp          Copy files/folders between a container and the local filesystem\n  create      Create ",
+        "test_execution_time": 0.018,
+        "test_error_output": null,
+        "test_exit_code": 0,
+        "error": null
+      }
+    },
+    {
+      "validator_name": "container_ubi",
+      "passed": true,
+      "execution_time_seconds": 1.8409368991851807,
+      "error_count": 0,
+      "warning_count": 1,
+      "errors": [],
+      "warnings": [
+        "Container image 'quay.io/validated-mcp-servers/dynatrace:0.5.0-rc.2' is not based on a UBI (Universal Base Image). Base image: Unknown. Consider using a UBI-based image for better security and support."
+      ],
+      "data": {
+        "container_runtime": "podman",
+        "image_name": "quay.io/validated-mcp-servers/dynatrace:0.5.0-rc.2",
+        "image_inspected": true,
+        "base_image": "Unknown",
+        "is_ubi_based": false,
+        "rhel_version": null,
+        "ubi_details": {},
+        "inspection_output": "{\n  \"Id\": \"12c9e77d83ac7fa87de0cecf16a9033306491de520ef29880fe0023373485d06\",\n  \"Digest\": \"sha256:ee358954645bc81c654ecb2d4aa8b6cf716a459e9796309c864fbb6f0e4cdd5e\",\n  \"RepoTags\": [\n    \"quay.io/validated-mcp-servers/dynatrace:0.5.0-rc.2\"\n  ],\n  \"RepoDigests\": [\n    \"quay.io/validated-mcp-servers/dynatrace@sha256:ee358954645bc81c654ecb2d4aa8b6cf716a459e9796309c864fbb6f0e4cdd5e\"\n  ],\n  \"Parent\": \"\",\n  \"Comment\": \"buildkit.dockerfile.v0\",\n  \"Created\": \"2025-08-09T19:38:25.146436182Z\",\n  \"Config\": {\n    \"Env\": [\n      \"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\",\n      \"NODE_VERSION=22.17.1\",\n      \"YARN_VERSION=1.22.22\"\n    ],\n    \"Entrypoint\": [\n      \"docker-entrypoint.sh\"\n    ],\n    \"Cmd\": [\n      \"node\",\n      \"dist/index.js\"\n    ],\n    \"WorkingDir\": \"/app\",\n    \"Labels\": {\n      \"io.buildah.version\": \"1.38.1\",\n      \"org.opencontainers.image.created\": \"2025-08-09T19:38:02Z\",\n      \"org.opencontainers.image.revision\": \"93a3fecc9b7b29b590d5a3b31fea9878840d6ab0\",\n      \"org.opencontainers.image.source\": \"https://github.com/dynatrace-oss/dynatrace-mcp\",\n      \"org.opencontainers.image.title\": \"MCP Server: dynatrace\",\n      \"org.opencontainers.image.version\": \"0.5.0-rc.2\"\n    }\n  },\n  \"Version\": \"\",\n  \"Author\": \"\",\n  \"Architecture\": \"amd64\",\n  \"Os\": \"linux\",\n  \"Size\": 362508763,\n  \"VirtualSize\": 362508763,\n  \"GraphDriver\": {\n    \"Name\": \"overlay\",\n    \"Data\": {\n      \"LowerDir\": \"/var/lib/containers/storage/overlay/03e701d5c54295c1fb310ff1a1ab2c22573fb6b79c40c238d9db458da5dcc601/diff:/var/lib/containers/storage/overlay/1cd3fdc17d243a846db4910911f0dbab8a3ac16d6f83109117e3ea4a5dc18a9a/diff:/var/lib/containers/storage/overlay/81ad5017cf1347e581dee254cf80943175f2c88ed8fd3317bc33015eb0986d7f/diff:/var/lib/containers/storage/overlay/7d274c7a696d065470a4377e67aed4db97a1dcbdd2f49fd82aaa3bbfa40173a8/diff:/var/lib/containers/storage/overlay/3de51c9fe22fd95fb5664a1b1525086161e3e8ec05c22b93a470405737c989da/diff:/var/lib/containers/storage/overlay/7003d23cc21",
+        "image_labels": {
+          "io.buildah.version": "1.38.1",
+          "org.opencontainers.image.created": "2025-08-09T19:38:02Z",
+          "org.opencontainers.image.revision": "93a3fecc9b7b29b590d5a3b31fea9878840d6ab0",
+          "org.opencontainers.image.source": "https://github.com/dynatrace-oss/dynatrace-mcp",
+          "org.opencontainers.image.title": "MCP Server: dynatrace",
+          "org.opencontainers.image.version": "0.5.0-rc.2"
+        },
+        "image_env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "NODE_VERSION=22.17.1",
+          "YARN_VERSION=1.22.22"
+        ],
+        "error": null
+      }
+    },
+    {
+      "validator_name": "container_version",
+      "passed": true,
+      "execution_time_seconds": 4.027942895889282,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "container_runtime": "podman",
+        "image_name": "quay.io/validated-mcp-servers/dynatrace:0.5.0-rc.2",
+        "image_tag": "0.5.0-rc.2",
+        "using_latest": false,
+        "available_tags": [],
+        "latest_tag": null,
+        "tag_check_performed": true,
+        "image_registry": "quay.io",
+        "image_repository": "validated-mcp-servers/dynatrace",
+        "full_image_name": "quay.io/validated-mcp-servers/dynatrace:0.5.0-rc.2",
+        "using_latest_available": true,
+        "tag_check_error": null
+      }
+    },
+    {
+      "validator_name": "registry",
+      "passed": true,
+      "execution_time_seconds": 0.9424839019775391,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "packages_checked": [
+          {
+            "exists": true,
+            "name": "express",
+            "registry_url": "https://registry.npmjs.org",
+            "available_versions": [
+              "0.14.0",
+              "1.0.1",
+              "1.0.0",
+              "0.14.1",
+              "1.0.2",
+              "1.0.3",
+              "1.0.4",
+              "1.0.5",
+              "1.0.6",
+              "1.0.7"
+            ],
+            "latest_version": "5.1.0",
+            "description": "Fast, unopinionated, minimalist web framework"
+          },
+          {
+            "exists": true,
+            "name": "requests",
+            "registry_url": "https://pypi.org",
+            "available_versions": [
+              "2.5.3",
+              "2.6.0",
+              "2.6.1",
+              "2.6.2",
+              "2.7.0",
+              "2.8.0",
+              "2.8.1",
+              "2.9.0",
+              "2.9.1",
+              "2.9.2"
+            ],
+            "latest_version": "2.32.4",
+            "description": "Python HTTP for Humans."
+          },
+          {
+            "exists": true,
+            "name": "node",
+            "registry_url": "https://hub.docker.com",
+            "available_tags": [
+              "current-alpine3.22",
+              "current-alpine",
+              "alpine3.22",
+              "alpine",
+              "24.5.0-alpine3.22",
+              "24.5.0-alpine",
+              "24.5-alpine3.22",
+              "24.5-alpine",
+              "24-alpine3.22",
+              "24-alpine"
+            ],
+            "description": "Node.js is a JavaScript-based platform for server-side and networking applications.",
+            "is_official": false,
+            "pull_count": 5837432109
+          }
+        ],
+        "total_packages": 3,
+        "packages_found": 3,
+        "packages_missing": 0,
+        "registry_errors": 0,
+        "package_source": "configuration"
+      }
+    },
+    {
+      "validator_name": "protocol",
+      "passed": true,
+      "execution_time_seconds": 0.025098085403442383,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "server_info": {
+          "name": "Dynatrace MCP Server",
+          "version": "0.5.0-rc.2"
+        },
+        "capabilities": {
+          "tools": {}
+        },
+        "protocol_version": "2024-11-05"
+      }
+    },
+    {
+      "validator_name": "capabilities",
+      "passed": true,
+      "execution_time_seconds": 1.1920928955078125e-06,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "tools": [],
+        "prompts": [],
+        "resources": [],
+        "tested_capabilities": []
+      }
+    },
+    {
+      "validator_name": "ping",
+      "passed": true,
+      "execution_time_seconds": 0.004467964172363281,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "supported": true,
+        "response_time_ms": 4.46,
+        "error": null
+      }
+    },
+    {
+      "validator_name": "errors",
+      "passed": true,
+      "execution_time_seconds": 30.004243850708008,
+      "error_count": 0,
+      "warning_count": 1,
+      "errors": [],
+      "warnings": [
+        "Malformed request error test timed out"
+      ],
+      "data": {
+        "invalid_method_test": {
+          "passed": true,
+          "error": null,
+          "details": {
+            "code": -32601,
+            "message": "Method not found",
+            "data": null
+          }
+        },
+        "malformed_request_test": {
+          "passed": false,
+          "error": "Timeout",
+          "details": null
+        },
+        "compliance_issues": []
+      }
+    },
+    {
+      "validator_name": "security",
+      "passed": true,
+      "execution_time_seconds": 8.550675868988037,
+      "error_count": 0,
+      "warning_count": 1,
+      "errors": [],
+      "warnings": [
+        "Security analysis failed: 'NoneType' object has no attribute 'get'"
+      ],
+      "data": {
+        "scan_results": {
+          "/var/folders/3v/tdbf44sx53d590tl6ys7h2z40000gn/T/tmp3yhem045.json": {
+            "path": "/var/folders/3v/tdbf44sx53d590tl6ys7h2z40000gn/T/tmp3yhem045.json",
+            "servers": [
+              {
+                "name": "test-server",
+                "server": {
+                  "command": "echo",
+                  "args": [
+                    "MCP server placeholder"
+                  ],
+                  "type": "stdio",
+                  "env": null
+                },
+                "signature": null,
+                "error": {
+                  "message": "could not start server",
+                  "exception": "unhandled errors in a TaskGroup (1 sub-exception)"
+                }
+              }
+            ],
+            "issues": [],
+            "error": null
+          }
+        },
+        "scan_file": null,
+        "tools_scanned": 0,
+        "vulnerabilities_found": 0,
+        "vulnerability_types": [],
+        "risk_levels": []
+      }
+    }
+  ],
+  "optional_features": {
+    "ping_protocol": {
+      "tested": true,
+      "supported": true,
+      "response_time_ms": 4.46,
+      "error": null
+    },
+    "error_compliance": {
+      "tested": true,
+      "invalid_method_test": {
+        "passed": true,
+        "error": null,
+        "details": {
+          "code": -32601,
+          "message": "Method not found",
+          "data": null
+        }
+      },
+      "malformed_request_test": {
+        "passed": false,
+        "error": "Timeout",
+        "details": null
+      },
+      "compliance_issues": []
+    }
+  },
+  "security_analysis": {
+    "executed": true,
+    "tools_scanned": 0,
+    "vulnerabilities_found": 0,
+    "vulnerability_types": [],
+    "risk_levels": [],
+    "scan_file": null
+  },
+  "repository_validation": {
+    "repo_availability": {
+      "executed": false,
+      "repo_url": null,
+      "is_git_repo": false,
+      "clone_successful": false,
+      "has_readme": false,
+      "has_license": false,
+      "readme_files": [],
+      "license_files": []
+    },
+    "license_validation": {
+      "executed": false,
+      "license_detected": false,
+      "license_type": null,
+      "license_acceptable": false,
+      "license_files_found": []
+    }
+  },
+  "runtime_validation": {
+    "runtime_exists": {
+      "executed": true,
+      "runtime_command": "podman",
+      "runtime_found": true,
+      "runtime_path": "/opt/homebrew/bin/podman",
+      "runtime_version": "podman version 5.5.2",
+      "path_locations": [
+        "/opt/homebrew/bin/podman"
+      ]
+    },
+    "runtime_executable": {
+      "executed": true,
+      "executable_check_passed": true,
+      "test_execution_successful": true,
+      "test_command_used": "podman --help",
+      "test_execution_time": 0.018,
+      "test_exit_code": 0
+    }
+  },
+  "issues": {
+    "errors": [],
+    "warnings": [
+      "Container image 'quay.io/validated-mcp-servers/dynatrace:0.5.0-rc.2' is not based on a UBI (Universal Base Image). Base image: Unknown. Consider using a UBI-based image for better security and support.",
+      "Malformed request error test timed out",
+      "Security analysis failed: 'NoneType' object has no attribute 'get'"
+    ]
+  }
+}

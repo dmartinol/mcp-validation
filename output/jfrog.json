@@ -1,0 +1,467 @@
+{
+  "report_metadata": {
+    "generated_at": "2025-08-12T17:56:29.650852",
+    "validator_version": "2.0.0",
+    "profile_used": "comprehensive",
+    "command": "podman run -i --rm -e JFROG_ACCESS_TOKEN=test-access-token -e JFROG_URL=https://test.jfrog.com -e TRANSPORT=stdio -e PORT=8080 -e CORS_ORIGIN=* -e LOG_LEVEL=INFO -e MAX_RECONNECT_ATTEMPTS=5 -e RECONNECT_DELAY_MS=2000 quay.io/validated-mcp-servers/jfrog:0.0.1",
+    "environment_variables": {
+      "JFROG_ACCESS_TOKEN": "test-access-token",
+      "JFROG_URL": "https://test.jfrog.com",
+      "TRANSPORT": "stdio",
+      "PORT": "8080",
+      "CORS_ORIGIN": "*",
+      "LOG_LEVEL": "INFO",
+      "MAX_RECONNECT_ATTEMPTS": "5",
+      "RECONNECT_DELAY_MS": "2000"
+    }
+  },
+  "validation_summary": {
+    "overall_success": true,
+    "execution_time_seconds": 45.245567321777344,
+    "total_errors": 0,
+    "total_warnings": 3,
+    "validators_run": 10,
+    "validators_passed": 10
+  },
+  "server_information": {
+    "server_info": {
+      "name": "jfrog-mcp-server",
+      "version": "0.0.1"
+    },
+    "capabilities": {
+      "tools": {}
+    },
+    "discovered_items": {
+      "tools": {
+        "count": 0,
+        "names": []
+      },
+      "prompts": {
+        "count": 0,
+        "names": []
+      },
+      "resources": {
+        "count": 0,
+        "names": []
+      }
+    }
+  },
+  "validator_results": [
+    {
+      "validator_name": "runtime_exists",
+      "passed": true,
+      "execution_time_seconds": 0.02399277687072754,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "runtime_command": "podman",
+        "runtime_found": true,
+        "runtime_path": "/opt/homebrew/bin/podman",
+        "runtime_version": "podman version 5.5.2",
+        "path_locations": [
+          "/opt/homebrew/bin/podman"
+        ],
+        "search_paths": [
+          "/Users/dmartino/projects/AI/mcp/mcp-validation/.venv/bin",
+          "/Users/dmartino/.pyenv/versions/3.11.9/bin",
+          "/opt/homebrew/Cellar/pyenv/2.5.1/libexec",
+          "/opt/homebrew/Cellar/pyenv/2.5.1/plugins/python-build/bin",
+          "/Users/dmartino/.npm-global/bin",
+          "/Users/dmartino/Downloads/google-cloud-sdk/bin",
+          "/Users/dmartino/.krew/bin",
+          "/Users/dmartino/.jbang/bin",
+          "/Users/dmartino/.pyenv/shims",
+          "/Users/dmartino/miniconda3/condabin",
+          "/opt/homebrew/bin",
+          "/opt/homebrew/sbin",
+          "/usr/local/bin",
+          "/System/Cryptexes/App/usr/bin",
+          "/usr/bin",
+          "/bin",
+          "/usr/sbin",
+          "/sbin",
+          "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin",
+          "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin",
+          "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin",
+          "/usr/local/go/bin",
+          "/usr/local/munki",
+          "/Users/dmartino/.cursor/extensions/ms-python.debugpy-2025.8.0-darwin-arm64/bundled/scripts/noConfigScripts"
+        ]
+      }
+    },
+    {
+      "validator_name": "runtime_executable",
+      "passed": true,
+      "execution_time_seconds": 0.018093109130859375,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "runtime_command": "podman",
+        "executable_check_passed": true,
+        "permission_details": {
+          "file_path": "/opt/homebrew/bin/podman",
+          "exists": true,
+          "is_file": true,
+          "is_executable": true,
+          "owner_readable": true,
+          "owner_writable": false,
+          "owner_executable": true,
+          "group_readable": true,
+          "group_writable": false,
+          "group_executable": true,
+          "other_readable": true,
+          "other_writable": false,
+          "other_executable": true,
+          "file_mode": 33133,
+          "file_mode_octal": "0o555"
+        },
+        "test_execution_successful": true,
+        "test_command_used": "podman --help",
+        "test_output": "Manage pods, containers and images\n\nUsage:\n  podman [options] [command]\n\nAvailable Commands:\n  attach      Attach to a running container\n  build       Build an image using instructions from Containerfiles\n  commit      Create new image based on the changed container\n  compose     Run compose workloads via an external provider such as docker-compose or podman-compose\n  container   Manage containers\n  cp          Copy files/folders between a container and the local filesystem\n  create      Create ",
+        "test_execution_time": 0.018,
+        "test_error_output": null,
+        "test_exit_code": 0,
+        "error": null
+      }
+    },
+    {
+      "validator_name": "container_ubi",
+      "passed": true,
+      "execution_time_seconds": 1.6832590103149414,
+      "error_count": 0,
+      "warning_count": 1,
+      "errors": [],
+      "warnings": [
+        "Container image 'quay.io/validated-mcp-servers/jfrog:0.0.1' is not based on a UBI (Universal Base Image). Base image: Unknown. Consider using a UBI-based image for better security and support."
+      ],
+      "data": {
+        "container_runtime": "podman",
+        "image_name": "quay.io/validated-mcp-servers/jfrog:0.0.1",
+        "image_inspected": true,
+        "base_image": "Unknown",
+        "is_ubi_based": false,
+        "rhel_version": null,
+        "ubi_details": {},
+        "inspection_output": "{\n  \"Id\": \"60f8be219297c63c10bbc21c24fd16e9d7a19cf9bd799170f5123a5923f027e3\",\n  \"Digest\": \"sha256:4d96c5a82a43890505e0173a3111ac28e6cf352887bd9451c695b3ab19fcbeb0\",\n  \"RepoTags\": [\n    \"quay.io/validated-mcp-servers/jfrog:0.0.1\"\n  ],\n  \"RepoDigests\": [\n    \"quay.io/validated-mcp-servers/jfrog@sha256:4d96c5a82a43890505e0173a3111ac28e6cf352887bd9451c695b3ab19fcbeb0\"\n  ],\n  \"Parent\": \"\",\n  \"Comment\": \"buildkit.dockerfile.v0\",\n  \"Created\": \"2025-08-09T19:40:59.750892473Z\",\n  \"Config\": {\n    \"ExposedPorts\": {\n      \"8080/tcp\": {}\n    },\n    \"Env\": [\n      \"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\",\n      \"NODE_VERSION=24.5.0\",\n      \"YARN_VERSION=1.22.22\",\n      \"NODE_ENV=production\"\n    ],\n    \"Entrypoint\": [\n      \"node\",\n      \"dist/index.js\"\n    ],\n    \"WorkingDir\": \"/app\",\n    \"Labels\": {\n      \"io.buildah.version\": \"1.38.1\",\n      \"org.opencontainers.image.created\": \"2025-08-09T19:40:46Z\",\n      \"org.opencontainers.image.revision\": \"212074fd87d3515cb29abef49dc7255fda7631ce\",\n      \"org.opencontainers.image.source\": \"https://github.com/jfrog/mcp-jfrog\",\n      \"org.opencontainers.image.title\": \"MCP Server: jfrog\",\n      \"org.opencontainers.image.version\": \"0.0.1\"\n    }\n  },\n  \"Version\": \"\",\n  \"Author\": \"\",\n  \"Architecture\": \"amd64\",\n  \"Os\": \"linux\",\n  \"Size\": 209996485,\n  \"VirtualSize\": 209996485,\n  \"GraphDriver\": {\n    \"Name\": \"overlay\",\n    \"Data\": {\n      \"LowerDir\": \"/var/lib/containers/storage/overlay/ef9d60bac9c79f484ef21e53d12655515fa7bf14d8bf5a0c44223e2472a07ca4/diff:/var/lib/containers/storage/overlay/055d4da36542192f3f891a7780b0add97f4e061709850d3a04c9df3d5a28bf4b/diff:/var/lib/containers/storage/overlay/00ea3c8641c7b837a6b5543052f4f3c46c4f7ac1283249938e83ee185cedf413/diff:/var/lib/containers/storage/overlay/18527a8092bd479736ae8720037b392ad92963e536e1d5960e599573912545ec/diff:/var/lib/containers/storage/overlay/c9714e7247e6c927dfa000e6965d50f967269a2fca95d485a9ddfcd3cf96137e/diff:/var/lib/containers/storage/overlay/88b1e71b77881807",
+        "image_labels": {
+          "io.buildah.version": "1.38.1",
+          "org.opencontainers.image.created": "2025-08-09T19:40:46Z",
+          "org.opencontainers.image.revision": "212074fd87d3515cb29abef49dc7255fda7631ce",
+          "org.opencontainers.image.source": "https://github.com/jfrog/mcp-jfrog",
+          "org.opencontainers.image.title": "MCP Server: jfrog",
+          "org.opencontainers.image.version": "0.0.1"
+        },
+        "image_env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "NODE_VERSION=24.5.0",
+          "YARN_VERSION=1.22.22",
+          "NODE_ENV=production"
+        ],
+        "error": null
+      }
+    },
+    {
+      "validator_name": "container_version",
+      "passed": true,
+      "execution_time_seconds": 3.8541839122772217,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "container_runtime": "podman",
+        "image_name": "quay.io/validated-mcp-servers/jfrog:0.0.1",
+        "image_tag": "0.0.1",
+        "using_latest": false,
+        "available_tags": [],
+        "latest_tag": null,
+        "tag_check_performed": true,
+        "image_registry": "quay.io",
+        "image_repository": "validated-mcp-servers/jfrog",
+        "full_image_name": "quay.io/validated-mcp-servers/jfrog:0.0.1",
+        "using_latest_available": true,
+        "tag_check_error": null
+      }
+    },
+    {
+      "validator_name": "registry",
+      "passed": true,
+      "execution_time_seconds": 0.8163719177246094,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "packages_checked": [
+          {
+            "exists": true,
+            "name": "express",
+            "registry_url": "https://registry.npmjs.org",
+            "available_versions": [
+              "0.14.0",
+              "1.0.1",
+              "1.0.0",
+              "0.14.1",
+              "1.0.2",
+              "1.0.3",
+              "1.0.4",
+              "1.0.5",
+              "1.0.6",
+              "1.0.7"
+            ],
+            "latest_version": "5.1.0",
+            "description": "Fast, unopinionated, minimalist web framework"
+          },
+          {
+            "exists": true,
+            "name": "requests",
+            "registry_url": "https://pypi.org",
+            "available_versions": [
+              "2.5.3",
+              "2.6.0",
+              "2.6.1",
+              "2.6.2",
+              "2.7.0",
+              "2.8.0",
+              "2.8.1",
+              "2.9.0",
+              "2.9.1",
+              "2.9.2"
+            ],
+            "latest_version": "2.32.4",
+            "description": "Python HTTP for Humans."
+          },
+          {
+            "exists": true,
+            "name": "node",
+            "registry_url": "https://hub.docker.com",
+            "available_tags": [
+              "current-alpine3.22",
+              "current-alpine",
+              "alpine3.22",
+              "alpine",
+              "24.5.0-alpine3.22",
+              "24.5.0-alpine",
+              "24.5-alpine3.22",
+              "24.5-alpine",
+              "24-alpine3.22",
+              "24-alpine"
+            ],
+            "description": "Node.js is a JavaScript-based platform for server-side and networking applications.",
+            "is_official": false,
+            "pull_count": 5837438185
+          }
+        ],
+        "total_packages": 3,
+        "packages_found": 3,
+        "packages_missing": 0,
+        "registry_errors": 0,
+        "package_source": "configuration"
+      }
+    },
+    {
+      "validator_name": "protocol",
+      "passed": true,
+      "execution_time_seconds": 0.023659944534301758,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "server_info": {
+          "name": "jfrog-mcp-server",
+          "version": "0.0.1"
+        },
+        "capabilities": {
+          "tools": {}
+        },
+        "protocol_version": "2024-11-05"
+      }
+    },
+    {
+      "validator_name": "capabilities",
+      "passed": true,
+      "execution_time_seconds": 4.0531158447265625e-06,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "tools": [],
+        "prompts": [],
+        "resources": [],
+        "tested_capabilities": []
+      }
+    },
+    {
+      "validator_name": "ping",
+      "passed": true,
+      "execution_time_seconds": 0.004295825958251953,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "supported": true,
+        "response_time_ms": 4.28,
+        "error": null
+      }
+    },
+    {
+      "validator_name": "errors",
+      "passed": true,
+      "execution_time_seconds": 30.00208592414856,
+      "error_count": 0,
+      "warning_count": 1,
+      "errors": [],
+      "warnings": [
+        "Malformed request error test timed out"
+      ],
+      "data": {
+        "invalid_method_test": {
+          "passed": true,
+          "error": null,
+          "details": {
+            "code": -32601,
+            "message": "Method not found",
+            "data": null
+          }
+        },
+        "malformed_request_test": {
+          "passed": false,
+          "error": "Timeout",
+          "details": null
+        },
+        "compliance_issues": []
+      }
+    },
+    {
+      "validator_name": "security",
+      "passed": true,
+      "execution_time_seconds": 8.555941343307495,
+      "error_count": 0,
+      "warning_count": 1,
+      "errors": [],
+      "warnings": [
+        "Security analysis failed: 'NoneType' object has no attribute 'get'"
+      ],
+      "data": {
+        "scan_results": {
+          "/var/folders/3v/tdbf44sx53d590tl6ys7h2z40000gn/T/tmp2gyskpse.json": {
+            "path": "/var/folders/3v/tdbf44sx53d590tl6ys7h2z40000gn/T/tmp2gyskpse.json",
+            "servers": [
+              {
+                "name": "test-server",
+                "server": {
+                  "command": "echo",
+                  "args": [
+                    "MCP server placeholder"
+                  ],
+                  "type": "stdio",
+                  "env": null
+                },
+                "signature": null,
+                "error": {
+                  "message": "could not start server",
+                  "exception": "unhandled errors in a TaskGroup (1 sub-exception)"
+                }
+              }
+            ],
+            "issues": [],
+            "error": null
+          }
+        },
+        "scan_file": null,
+        "tools_scanned": 0,
+        "vulnerabilities_found": 0,
+        "vulnerability_types": [],
+        "risk_levels": []
+      }
+    }
+  ],
+  "optional_features": {
+    "ping_protocol": {
+      "tested": true,
+      "supported": true,
+      "response_time_ms": 4.28,
+      "error": null
+    },
+    "error_compliance": {
+      "tested": true,
+      "invalid_method_test": {
+        "passed": true,
+        "error": null,
+        "details": {
+          "code": -32601,
+          "message": "Method not found",
+          "data": null
+        }
+      },
+      "malformed_request_test": {
+        "passed": false,
+        "error": "Timeout",
+        "details": null
+      },
+      "compliance_issues": []
+    }
+  },
+  "security_analysis": {
+    "executed": true,
+    "tools_scanned": 0,
+    "vulnerabilities_found": 0,
+    "vulnerability_types": [],
+    "risk_levels": [],
+    "scan_file": null
+  },
+  "repository_validation": {
+    "repo_availability": {
+      "executed": false,
+      "repo_url": null,
+      "is_git_repo": false,
+      "clone_successful": false,
+      "has_readme": false,
+      "has_license": false,
+      "readme_files": [],
+      "license_files": []
+    },
+    "license_validation": {
+      "executed": false,
+      "license_detected": false,
+      "license_type": null,
+      "license_acceptable": false,
+      "license_files_found": []
+    }
+  },
+  "runtime_validation": {
+    "runtime_exists": {
+      "executed": true,
+      "runtime_command": "podman",
+      "runtime_found": true,
+      "runtime_path": "/opt/homebrew/bin/podman",
+      "runtime_version": "podman version 5.5.2",
+      "path_locations": [
+        "/opt/homebrew/bin/podman"
+      ]
+    },
+    "runtime_executable": {
+      "executed": true,
+      "executable_check_passed": true,
+      "test_execution_successful": true,
+      "test_command_used": "podman --help",
+      "test_execution_time": 0.018,
+      "test_exit_code": 0
+    }
+  },
+  "issues": {
+    "errors": [],
+    "warnings": [
+      "Container image 'quay.io/validated-mcp-servers/jfrog:0.0.1' is not based on a UBI (Universal Base Image). Base image: Unknown. Consider using a UBI-based image for better security and support.",
+      "Malformed request error test timed out",
+      "Security analysis failed: 'NoneType' object has no attribute 'get'"
+    ]
+  }
+}

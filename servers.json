@@ -1,0 +1,68 @@
+[
+  {
+    "Name": "hashicorp",
+    "URL": "https://github.com/hashicorp/terraform-mcp-server",
+    "Repo": "quay.io/validated-mcp-servers/terraform-mcp-server:20250809-13ef8d0",
+    "Transport": "stdio/http"
+  },
+  {
+    "Name": "dynatrace-oss",
+    "URL": "https://github.com/dynatrace-oss/dynatrace-mcp",
+    "Repo": "quay.io/validated-mcp-servers/dynatrace:0.5.0-rc.2",
+    "Transport": "stdio"
+  },
+  {
+    "Name": "redis",
+    "URL": "https://github.com/redis/mcp-redis/",
+    "Repo": "quay.io/validated-mcp-servers/redis:version0.3.0",
+    "Transport": "stdio"
+  },
+  {
+    "Name": "redis-cloud",
+    "URL": "https://github.com/redis/mcp-redis-cloud/",
+    "Repo": "quay.io/validated-mcp-servers/redis-cloud:1.0.0",
+    "Transport": "stdio"
+  },
+  {
+    "Name": "Couchbase-Ecosystem",
+    "URL": "https://github.com/Couchbase-Ecosystem/mcp-server-couchbase",
+    "Repo": "quay.io/validated-mcp-servers/mcp-server-couchbase:0.4.0",
+    "Transport": "stdio/http/sse"
+  },
+  {
+    "Name": "elastic",
+    "URL": "https://github.com/elastic/mcp-server-elasticsearch",
+    "Repo": "quay.io/validated-mcp-servers/elasticsearch:20250809-5014d91",
+    "Transport": "stdio/http/sse"
+  },
+  {
+    "Name": "jfrog",
+    "URL": "https://github.com/jfrog/mcp-jfrog",
+    "Repo": "quay.io/validated-mcp-servers/jfrog:0.0.1",
+    "Transport": "stdio/sse"
+  },
+  {
+    "Name": "mulesoft",
+    "URL": "https://www.npmjs.com/package/@mulesoft/mcp-server",
+    "Repo": "quay.io/validated-mcp-servers/mulesoft-mcp-server:1.0.0",
+    "Transport": "N/A"
+  },
+  {
+    "Name": "snyk",
+    "URL": "https://github.com/snyk/snyk-ls/blob/main/mcp_extension/README.md",
+    "Repo": "No Dockerfile found for snyk-ls, skipping",
+    "Transport": "http/sse"
+  },
+  {
+    "Name": "Unstructured-IO",
+    "URL": "https://github.com/Unstructured-IO/UNS-MCP",
+    "Repo": "No Dockerfile found for uns, skipping",
+    "Transport": "stdio/sse"
+  },
+  {
+    "Name": "IBM",
+    "URL": "https://github.com/IBM/wxflows/tree/main/examples/mcp/javascript",
+    "Repo": "No Dockerfile found for wxflows-mcp-js, skipping",
+    "Transport": "N/A"
+  }
+]

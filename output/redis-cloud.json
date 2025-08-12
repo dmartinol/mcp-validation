@@ -1,0 +1,461 @@
+{
+  "report_metadata": {
+    "generated_at": "2025-08-12T18:33:51.754586",
+    "validator_version": "2.0.0",
+    "profile_used": "comprehensive",
+    "command": "podman run -i --rm -e API_KEY=test-api-key -e SECRET_KEY=test-secret-key quay.io/validated-mcp-servers/redis-cloud:1.0.0",
+    "environment_variables": {
+      "API_KEY": "test-api-key",
+      "SECRET_KEY": "test-secret-key"
+    }
+  },
+  "validation_summary": {
+    "overall_success": true,
+    "execution_time_seconds": 82.27396202087402,
+    "total_errors": 0,
+    "total_warnings": 3,
+    "validators_run": 10,
+    "validators_passed": 10
+  },
+  "server_information": {
+    "server_info": {
+      "name": "mcp-redis-cloud",
+      "version": "1.0.0"
+    },
+    "capabilities": {
+      "tools": {}
+    },
+    "discovered_items": {
+      "tools": {
+        "count": 0,
+        "names": []
+      },
+      "prompts": {
+        "count": 0,
+        "names": []
+      },
+      "resources": {
+        "count": 0,
+        "names": []
+      }
+    }
+  },
+  "validator_results": [
+    {
+      "validator_name": "runtime_exists",
+      "passed": true,
+      "execution_time_seconds": 0.019928932189941406,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "runtime_command": "podman",
+        "runtime_found": true,
+        "runtime_path": "/opt/homebrew/bin/podman",
+        "runtime_version": "podman version 5.5.2",
+        "path_locations": [
+          "/opt/homebrew/bin/podman"
+        ],
+        "search_paths": [
+          "/Users/dmartino/projects/AI/mcp/mcp-validation/.venv/bin",
+          "/Users/dmartino/.pyenv/versions/3.11.9/bin",
+          "/opt/homebrew/Cellar/pyenv/2.5.1/libexec",
+          "/opt/homebrew/Cellar/pyenv/2.5.1/plugins/python-build/bin",
+          "/Users/dmartino/.npm-global/bin",
+          "/Users/dmartino/Downloads/google-cloud-sdk/bin",
+          "/Users/dmartino/.krew/bin",
+          "/Users/dmartino/.jbang/bin",
+          "/Users/dmartino/.pyenv/shims",
+          "/Users/dmartino/miniconda3/condabin",
+          "/opt/homebrew/bin",
+          "/opt/homebrew/sbin",
+          "/usr/local/bin",
+          "/System/Cryptexes/App/usr/bin",
+          "/usr/bin",
+          "/bin",
+          "/usr/sbin",
+          "/sbin",
+          "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin",
+          "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin",
+          "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin",
+          "/usr/local/go/bin",
+          "/usr/local/munki",
+          "/Users/dmartino/.cursor/extensions/ms-python.debugpy-2025.8.0-darwin-arm64/bundled/scripts/noConfigScripts"
+        ]
+      }
+    },
+    {
+      "validator_name": "runtime_executable",
+      "passed": true,
+      "execution_time_seconds": 0.021907329559326172,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "runtime_command": "podman",
+        "executable_check_passed": true,
+        "permission_details": {
+          "file_path": "/opt/homebrew/bin/podman",
+          "exists": true,
+          "is_file": true,
+          "is_executable": true,
+          "owner_readable": true,
+          "owner_writable": false,
+          "owner_executable": true,
+          "group_readable": true,
+          "group_writable": false,
+          "group_executable": true,
+          "other_readable": true,
+          "other_writable": false,
+          "other_executable": true,
+          "file_mode": 33133,
+          "file_mode_octal": "0o555"
+        },
+        "test_execution_successful": true,
+        "test_command_used": "podman --help",
+        "test_output": "Manage pods, containers and images\n\nUsage:\n  podman [options] [command]\n\nAvailable Commands:\n  attach      Attach to a running container\n  build       Build an image using instructions from Containerfiles\n  commit      Create new image based on the changed container\n  compose     Run compose workloads via an external provider such as docker-compose or podman-compose\n  container   Manage containers\n  cp          Copy files/folders between a container and the local filesystem\n  create      Create ",
+        "test_execution_time": 0.022,
+        "test_error_output": null,
+        "test_exit_code": 0,
+        "error": null
+      }
+    },
+    {
+      "validator_name": "container_ubi",
+      "passed": true,
+      "execution_time_seconds": 35.990594148635864,
+      "error_count": 0,
+      "warning_count": 1,
+      "errors": [],
+      "warnings": [
+        "Container image 'quay.io/validated-mcp-servers/redis-cloud:1.0.0' is not based on a UBI (Universal Base Image). Base image: Unknown. Consider using a UBI-based image for better security and support."
+      ],
+      "data": {
+        "container_runtime": "podman",
+        "image_name": "quay.io/validated-mcp-servers/redis-cloud:1.0.0",
+        "image_inspected": true,
+        "base_image": "Unknown",
+        "is_ubi_based": false,
+        "rhel_version": null,
+        "ubi_details": {},
+        "inspection_output": "{\n  \"Id\": \"b0b28df00205db6181b3df56e2b360983a81fde66be53070bf5d946135ad1dbf\",\n  \"Digest\": \"sha256:88a24a31dbb856d96fccdc3bc8a579a9aec20a1154345bcc2b4682fb8576f9c7\",\n  \"RepoTags\": [\n    \"quay.io/validated-mcp-servers/redis-cloud:1.0.0\"\n  ],\n  \"RepoDigests\": [\n    \"quay.io/validated-mcp-servers/redis-cloud@sha256:88a24a31dbb856d96fccdc3bc8a579a9aec20a1154345bcc2b4682fb8576f9c7\"\n  ],\n  \"Parent\": \"\",\n  \"Comment\": \"buildkit.dockerfile.v0\",\n  \"Created\": \"2025-08-09T19:40:03.093877758Z\",\n  \"Config\": {\n    \"Env\": [\n      \"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\",\n      \"NODE_VERSION=22.12.0\",\n      \"YARN_VERSION=1.22.22\",\n      \"NODE_ENV=production\"\n    ],\n    \"Entrypoint\": [\n      \"node\",\n      \"dist/index.js\"\n    ],\n    \"WorkingDir\": \"/app\",\n    \"Labels\": {\n      \"io.buildah.version\": \"1.38.1\",\n      \"org.opencontainers.image.created\": \"2025-08-09T19:39:52Z\",\n      \"org.opencontainers.image.revision\": \"015aaa6bfeec87198a08eaae00352348d4db4b72\",\n      \"org.opencontainers.image.source\": \"https://github.com/redis/mcp-redis-cloud\",\n      \"org.opencontainers.image.title\": \"MCP Server: redis-cloud\",\n      \"org.opencontainers.image.version\": \"1.0.0\"\n    }\n  },\n  \"Version\": \"\",\n  \"Author\": \"\",\n  \"Architecture\": \"amd64\",\n  \"Os\": \"linux\",\n  \"Size\": 172934980,\n  \"VirtualSize\": 172934980,\n  \"GraphDriver\": {\n    \"Name\": \"overlay\",\n    \"Data\": {\n      \"LowerDir\": \"/var/lib/containers/storage/overlay/b9697143fa36bfa9bf130cf858d5b75da0aa9b73d90cb98f44e98d9eb0fa3e2b/diff:/var/lib/containers/storage/overlay/e075c4accc897747596192e41d256748baa8313be33e8fd0c4491b1c13b9acd4/diff:/var/lib/containers/storage/overlay/7bbd16728b66bce1955faa5b3baee20b0bffb0de4eaac64e15cced0ab3932fd2/diff:/var/lib/containers/storage/overlay/57746b3c008b88d79c2139faeb152056a76469f8062ee9d4110308b3515a3daa/diff:/var/lib/containers/storage/overlay/a796ca0250a7384903be2652e7dcdb9a674b4ba496a7781d317845ebd3be5386/diff:/var/lib/containers/storage/overlay/acd903009ca117ea04b04f2aa40467c946fc60f2d",
+        "image_labels": {
+          "io.buildah.version": "1.38.1",
+          "org.opencontainers.image.created": "2025-08-09T19:39:52Z",
+          "org.opencontainers.image.revision": "015aaa6bfeec87198a08eaae00352348d4db4b72",
+          "org.opencontainers.image.source": "https://github.com/redis/mcp-redis-cloud",
+          "org.opencontainers.image.title": "MCP Server: redis-cloud",
+          "org.opencontainers.image.version": "1.0.0"
+        },
+        "image_env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "NODE_VERSION=22.12.0",
+          "YARN_VERSION=1.22.22",
+          "NODE_ENV=production"
+        ],
+        "error": null
+      }
+    },
+    {
+      "validator_name": "container_version",
+      "passed": true,
+      "execution_time_seconds": 4.0213401317596436,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "container_runtime": "podman",
+        "image_name": "quay.io/validated-mcp-servers/redis-cloud:1.0.0",
+        "image_tag": "1.0.0",
+        "using_latest": false,
+        "available_tags": [],
+        "latest_tag": null,
+        "tag_check_performed": true,
+        "image_registry": "quay.io",
+        "image_repository": "validated-mcp-servers/redis-cloud",
+        "full_image_name": "quay.io/validated-mcp-servers/redis-cloud:1.0.0",
+        "using_latest_available": true,
+        "tag_check_error": null
+      }
+    },
+    {
+      "validator_name": "registry",
+      "passed": true,
+      "execution_time_seconds": 1.2873971462249756,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "packages_checked": [
+          {
+            "exists": true,
+            "name": "express",
+            "registry_url": "https://registry.npmjs.org",
+            "available_versions": [
+              "0.14.0",
+              "1.0.1",
+              "1.0.0",
+              "0.14.1",
+              "1.0.2",
+              "1.0.3",
+              "1.0.4",
+              "1.0.5",
+              "1.0.6",
+              "1.0.7"
+            ],
+            "latest_version": "5.1.0",
+            "description": "Fast, unopinionated, minimalist web framework"
+          },
+          {
+            "exists": true,
+            "name": "requests",
+            "registry_url": "https://pypi.org",
+            "available_versions": [
+              "2.5.3",
+              "2.6.0",
+              "2.6.1",
+              "2.6.2",
+              "2.7.0",
+              "2.8.0",
+              "2.8.1",
+              "2.9.0",
+              "2.9.1",
+              "2.9.2"
+            ],
+            "latest_version": "2.32.4",
+            "description": "Python HTTP for Humans."
+          },
+          {
+            "exists": true,
+            "name": "node",
+            "registry_url": "https://hub.docker.com",
+            "available_tags": [
+              "current-alpine3.22",
+              "current-alpine",
+              "alpine3.22",
+              "alpine",
+              "24.5.0-alpine3.22",
+              "24.5.0-alpine",
+              "24.5-alpine3.22",
+              "24.5-alpine",
+              "24-alpine3.22",
+              "24-alpine"
+            ],
+            "description": "Node.js is a JavaScript-based platform for server-side and networking applications.",
+            "is_official": false,
+            "pull_count": 5837511767
+          }
+        ],
+        "total_packages": 3,
+        "packages_found": 3,
+        "packages_missing": 0,
+        "registry_errors": 0,
+        "package_source": "configuration"
+      }
+    },
+    {
+      "validator_name": "protocol",
+      "passed": true,
+      "execution_time_seconds": 0.03390812873840332,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "server_info": {
+          "name": "mcp-redis-cloud",
+          "version": "1.0.0"
+        },
+        "capabilities": {
+          "tools": {}
+        },
+        "protocol_version": "2024-11-05"
+      }
+    },
+    {
+      "validator_name": "capabilities",
+      "passed": true,
+      "execution_time_seconds": 2.1457672119140625e-06,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "tools": [],
+        "prompts": [],
+        "resources": [],
+        "tested_capabilities": []
+      }
+    },
+    {
+      "validator_name": "ping",
+      "passed": true,
+      "execution_time_seconds": 0.003871917724609375,
+      "error_count": 0,
+      "warning_count": 0,
+      "errors": [],
+      "warnings": [],
+      "data": {
+        "supported": true,
+        "response_time_ms": 3.87,
+        "error": null
+      }
+    },
+    {
+      "validator_name": "errors",
+      "passed": true,
+      "execution_time_seconds": 30.00339102745056,
+      "error_count": 0,
+      "warning_count": 1,
+      "errors": [],
+      "warnings": [
+        "Malformed request error test timed out"
+      ],
+      "data": {
+        "invalid_method_test": {
+          "passed": true,
+          "error": null,
+          "details": {
+            "code": -32601,
+            "message": "Method not found",
+            "data": null
+          }
+        },
+        "malformed_request_test": {
+          "passed": false,
+          "error": "Timeout",
+          "details": null
+        },
+        "compliance_issues": []
+      }
+    },
+    {
+      "validator_name": "security",
+      "passed": true,
+      "execution_time_seconds": 10.456279039382935,
+      "error_count": 0,
+      "warning_count": 1,
+      "errors": [],
+      "warnings": [
+        "Security analysis failed: 'NoneType' object has no attribute 'get'"
+      ],
+      "data": {
+        "scan_results": {
+          "/var/folders/3v/tdbf44sx53d590tl6ys7h2z40000gn/T/tmp48yp1hcg.json": {
+            "path": "/var/folders/3v/tdbf44sx53d590tl6ys7h2z40000gn/T/tmp48yp1hcg.json",
+            "servers": [
+              {
+                "name": "test-server",
+                "server": {
+                  "command": "echo",
+                  "args": [
+                    "MCP server placeholder"
+                  ],
+                  "type": "stdio",
+                  "env": null
+                },
+                "signature": null,
+                "error": {
+                  "message": "could not start server",
+                  "exception": "unhandled errors in a TaskGroup (1 sub-exception)"
+                }
+              }
+            ],
+            "issues": [],
+            "error": null
+          }
+        },
+        "scan_file": null,
+        "tools_scanned": 0,
+        "vulnerabilities_found": 0,
+        "vulnerability_types": [],
+        "risk_levels": []
+      }
+    }
+  ],
+  "optional_features": {
+    "ping_protocol": {
+      "tested": true,
+      "supported": true,
+      "response_time_ms": 3.87,
+      "error": null
+    },
+    "error_compliance": {
+      "tested": true,
+      "invalid_method_test": {
+        "passed": true,
+        "error": null,
+        "details": {
+          "code": -32601,
+          "message": "Method not found",
+          "data": null
+        }
+      },
+      "malformed_request_test": {
+        "passed": false,
+        "error": "Timeout",
+        "details": null
+      },
+      "compliance_issues": []
+    }
+  },
+  "security_analysis": {
+    "executed": true,
+    "tools_scanned": 0,
+    "vulnerabilities_found": 0,
+    "vulnerability_types": [],
+    "risk_levels": [],
+    "scan_file": null
+  },
+  "repository_validation": {
+    "repo_availability": {
+      "executed": false,
+      "repo_url": null,
+      "is_git_repo": false,
+      "clone_successful": false,
+      "has_readme": false,
+      "has_license": false,
+      "readme_files": [],
+      "license_files": []
+    },
+    "license_validation": {
+      "executed": false,
+      "license_detected": false,
+      "license_type": null,
+      "license_acceptable": false,
+      "license_files_found": []
+    }
+  },
+  "runtime_validation": {
+    "runtime_exists": {
+      "executed": true,
+      "runtime_command": "podman",
+      "runtime_found": true,
+      "runtime_path": "/opt/homebrew/bin/podman",
+      "runtime_version": "podman version 5.5.2",
+      "path_locations": [
+        "/opt/homebrew/bin/podman"
+      ]
+    },
+    "runtime_executable": {
+      "executed": true,
+      "executable_check_passed": true,
+      "test_execution_successful": true,
+      "test_command_used": "podman --help",
+      "test_execution_time": 0.022,
+      "test_exit_code": 0
+    }
+  },
+  "issues": {
+    "errors": [],
+    "warnings": [
+      "Container image 'quay.io/validated-mcp-servers/redis-cloud:1.0.0' is not based on a UBI (Universal Base Image). Base image: Unknown. Consider using a UBI-based image for better security and support.",
+      "Malformed request error test timed out",
+      "Security analysis failed: 'NoneType' object has no attribute 'get'"
+    ]
+  }
+}
