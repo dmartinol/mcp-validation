@@ -53,6 +53,9 @@ mcp-validate node server.js
 
 # Validate npx packages (use -- separator for flags)
 mcp-validate -- npx -y kubernetes-mcp-server@latest
+
+# Validate servers via container runtime (podman/docker)
+mcp-validate -- podman run -i --rm hashicorp/terraform-mcp-server
 ```
 
 ### With Environment Variables

@@ -31,7 +31,7 @@ def detect_runtime_command(command_args: List[str]) -> Optional[str]:
     
     # Direct runtime commands
     runtime_commands = {
-        'uv', 'docker', 'npx', 'node', 'python', 'python3', 
+        'uv', 'docker', 'podman', 'npx', 'node', 'python', 'python3', 
         'pip', 'java', 'mvn', 'gradle', 'go', 'cargo', 'rust'
     }
     
@@ -52,11 +52,22 @@ def detect_runtime_command(command_args: List[str]) -> Optional[str]:
     if first_command.endswith('.js') or first_command.endswith('.mjs'):
         return 'node'
     
-    # Check for docker run patterns
-    if len(command_args) >= 2 and first_command == 'docker' and command_args[1] == 'run':
-        return 'docker'
+    # Check for container run patterns
+    if len(command_args) >= 2 and first_command in ['docker', 'podman'] and command_args[1] == 'run':
+        return first_command
     
     return None
+
+
+def is_container_runtime_command(command_args: List[str]) -> bool:
+    """Check if command is a container runtime command (docker/podman run)."""
+    if not command_args or len(command_args) < 3:
+        return False
+    
+    return (
+        command_args[0] in ['docker', 'podman'] 
+        and command_args[1] == 'run'
+    )
 
 
 def create_argument_parser() -> argparse.ArgumentParser:
@@ -258,6 +269,31 @@ async def main():
                 active_profile.validators["runtime_executable"].enabled = True
                 active_profile.validators["runtime_executable"].parameters["runtime_command"] = runtime_command
 
+        # Enable container validators for container runtime commands
+        if is_container_runtime_command(args.command):
+            # Add container UBI validator
+            if "container_ubi" not in active_profile.validators:
+                from ..config.settings import ValidatorConfig
+                active_profile.validators["container_ubi"] = ValidatorConfig(
+                    enabled=True, required=False, timeout=60.0,
+                    parameters={"warn_only_for_non_ubi": True}
+                )
+            else:
+                active_profile.validators["container_ubi"].enabled = True
+                # Ensure warn_only is set to True by default
+                if "warn_only_for_non_ubi" not in active_profile.validators["container_ubi"].parameters:
+                    active_profile.validators["container_ubi"].parameters["warn_only_for_non_ubi"] = True
+
+            # Add container version validator  
+            if "container_version" not in active_profile.validators:
+                from ..config.settings import ValidatorConfig
+                active_profile.validators["container_version"] = ValidatorConfig(
+                    enabled=True, required=False, timeout=30.0,
+                    parameters={}
+                )
+            else:
+                active_profile.validators["container_version"].enabled = True
+
         # Override timeout
         if args.timeout:
             active_profile.global_timeout = args.timeout
@@ -272,6 +308,8 @@ async def main():
             print(f"Repository URL: {args.repo_url}")
         if runtime_command:
             print(f"Runtime command: {runtime_command}")
+        if is_container_runtime_command(args.command):
+            print("Container runtime detected: Container image validation enabled")
         if env_vars:
             print("Environment variables:")
             for key, value in env_vars.items():
@@ -292,7 +330,9 @@ async def main():
         # Generate JSON report if requested
         if args.json_report:
             json_reporter = JSONReporter()
-            json_reporter.save_report(session, args.json_report, args.command, env_vars)
+            # Use the final command args from the session (includes injected -e options for containers)
+            final_command_args = session.command_args if session.command_args else args.command
+            json_reporter.save_report(session, args.json_report, final_command_args, env_vars)
 
         # Exit with appropriate code
         return 0 if session.overall_success else 1

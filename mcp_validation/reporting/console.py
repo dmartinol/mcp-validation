@@ -50,13 +50,24 @@ class ConsoleReporter:
             self._report_errors_data(result.data)
         elif result.validator_name == "security":
             self._report_security_data(result.data)
+        elif result.validator_name == "container_ubi":
+            self._report_container_ubi_data(result.data)
+        elif result.validator_name == "container_version":
+            self._report_container_version_data(result.data)
 
         # Report errors and warnings if verbose or validator failed
         if result.errors and (self.verbose or not result.passed):
             for error in result.errors:
                 print(f"    ❌ {error}")
 
-        if result.warnings and self.verbose:
+        # Show warnings for container validators always, others only in verbose mode
+        show_warnings = (
+            self.verbose or 
+            result.validator_name.startswith("container_") or
+            not result.passed
+        )
+        
+        if result.warnings and show_warnings:
             for warning in result.warnings:
                 print(f"    ⚠️  {warning}")
 
@@ -146,6 +157,36 @@ class ConsoleReporter:
         scan_file = data.get("scan_file")
         if scan_file:
             print(f"        💾 Report saved: {scan_file}")
+
+    def _report_container_ubi_data(self, data: Dict[str, Any]) -> None:
+        """Report container UBI validation specific data."""
+        image_name = data.get("image_name", "Unknown")
+        base_image = data.get("base_image", "Unknown")
+        is_ubi_based = data.get("is_ubi_based", False)
+        rhel_version = data.get("rhel_version")
+        
+        print(f"    🐳 Container Image: {image_name}")
+        
+        if is_ubi_based:
+            if rhel_version:
+                print(f"    ✅ UBI Base: {base_image} (RHEL {rhel_version})")
+            else:
+                print(f"    ✅ UBI Base: {base_image}")
+        else:
+            print(f"    📦 Base Image: {base_image} (Non-UBI)")
+
+    def _report_container_version_data(self, data: Dict[str, Any]) -> None:
+        """Report container version validation specific data."""
+        image_name = data.get("image_name", "Unknown")
+        image_tag = data.get("image_tag", "Unknown")
+        using_latest = data.get("using_latest", False)
+        
+        print(f"    🐳 Container Image: {image_name}")
+        
+        if using_latest:
+            print(f"    ✅ Version: {image_tag} (Latest)")
+        else:
+            print(f"    📌 Version: {image_tag} (Specific tag)")
 
 
 def print_profile_info(config_manager) -> None:

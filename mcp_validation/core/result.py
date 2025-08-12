@@ -57,6 +57,7 @@ class ValidationSession:
     validator_results: List[ValidatorResult]
     errors: List[str]
     warnings: List[str]
+    command_args: List[str] = None
 
     def to_legacy_result(self) -> MCPValidationResult:
         """Convert to legacy MCPValidationResult for backward compatibility."""

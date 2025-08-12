@@ -20,6 +20,60 @@ from .result import ValidationSession
 from .transport import JSONRPCTransport
 
 
+def _inject_container_env_vars(command_args: List[str], env_vars: Dict[str, str]) -> List[str]:
+    """Inject environment variables as -e options for container commands."""
+    if not env_vars or len(command_args) < 2:
+        return command_args
+    
+    # Check if this is a container run command
+    if command_args[0] not in ['docker', 'podman'] or command_args[1] != 'run':
+        return command_args
+    
+    # Find insertion point (after 'run' but before the image name)
+    # We need to insert after options but before the image
+    insertion_point = 2
+    
+    # Skip existing options to find where image starts
+    options_with_values = {
+        "-v", "--volume", "-e", "--env", "-p", "--port", "--name", 
+        "-w", "--workdir", "-u", "--user", "--entrypoint", "--hostname",
+        "--restart", "--memory", "--cpus", "--network", "--label"
+    }
+    
+    i = 2
+    while i < len(command_args):
+        arg = command_args[i]
+        
+        if arg.startswith("-"):
+            if arg in options_with_values:
+                # Option with separate value
+                i += 2
+                insertion_point = i
+            elif "=" in arg:
+                # Option with value in same argument
+                i += 1  
+                insertion_point = i
+            else:
+                # Flag option
+                i += 1
+                insertion_point = i
+        else:
+            # Found the image name
+            break
+    
+    # Build new command with environment variables injected
+    new_command = command_args[:insertion_point]
+    
+    # Add environment variables as -e options
+    for key, value in env_vars.items():
+        new_command.extend(["-e", f"{key}={value}"])
+    
+    # Add the rest of the command (image and arguments)
+    new_command.extend(command_args[insertion_point:])
+    
+    return new_command
+
+
 class ValidatorRegistry:
     """Registry for available validators."""
 
@@ -68,6 +122,7 @@ class MCPValidationOrchestrator:
             from ..validators.security import SecurityValidator
             from ..validators.repo import RepoAvailabilityValidator, LicenseValidator
             from ..validators.runtime import RuntimeExistsValidator, RuntimeExecutableValidator
+            from ..validators.container import ContainerUBIValidator, ContainerVersionValidator
 
             # Register repository validators first (they have no dependencies)
             self.registry.register(RepoAvailabilityValidator)
@@ -76,6 +131,10 @@ class MCPValidationOrchestrator:
             # Register runtime validators (run after repo but before others)
             self.registry.register(RuntimeExistsValidator)
             self.registry.register(RuntimeExecutableValidator)
+            
+            # Register container validators (run after runtime validators)
+            self.registry.register(ContainerUBIValidator)
+            self.registry.register(ContainerVersionValidator)
             
             # Register other validators
             self.registry.register(ProtocolValidator)
@@ -108,6 +167,7 @@ class MCPValidationOrchestrator:
         errors = []
         warnings = []
         validator_results = []
+        final_command_args = command_args  # Initialize with original command args
 
         # Use specified profile or active profile
         if profile_name:
@@ -124,13 +184,21 @@ class MCPValidationOrchestrator:
             # Start MCP server process
             log_execution_step("Preparing environment")
             env = os.environ.copy()
-            if env_vars:
+            
+            # For container commands, inject environment variables as -e options
+            final_command_args = command_args
+            if env_vars and len(command_args) >= 2 and command_args[0] in ['docker', 'podman'] and command_args[1] == 'run':
+                final_command_args = _inject_container_env_vars(command_args, env_vars)
+                log_execution_step(f"Injected {len(env_vars)} environment variables as -e options for container")
+                log_execution_step("Modified command", f"Command: {' '.join(final_command_args)}")
+            elif env_vars:
+                # For non-container commands, use environment variables in subprocess environment
                 env.update(env_vars)
-                log_execution_step(f"Added {len(env_vars)} environment variables")
+                log_execution_step(f"Added {len(env_vars)} environment variables to subprocess environment")
 
-            log_execution_step("Creating subprocess", f"Command: {' '.join(command_args)}")
+            log_execution_step("Creating subprocess", f"Command: {' '.join(final_command_args)}")
             process = await asyncio.create_subprocess_exec(
-                *command_args,
+                *final_command_args,
                 stdin=asyncio.subprocess.PIPE,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
@@ -147,7 +215,7 @@ class MCPValidationOrchestrator:
                 server_info={},
                 capabilities={},
                 timeout=profile.global_timeout,
-                command_args=command_args,
+                command_args=final_command_args,
             )
             context.transport = transport
 
@@ -201,6 +269,7 @@ class MCPValidationOrchestrator:
             validator_results=validator_results,
             errors=errors,
             warnings=warnings,
+            command_args=final_command_args,
         )
 
     def _create_validators(self, profile: ValidationProfile) -> List[BaseValidator]:
@@ -260,6 +329,12 @@ class MCPValidationOrchestrator:
         for runtime_validator_name in runtime_validators:
             if runtime_validator_name in validator_map:
                 process_validator(validator_map[runtime_validator_name])
+
+        # Then, process container validators (run after runtime validators)
+        container_validators = ["container_ubi", "container_version"]
+        for container_validator_name in container_validators:
+            if container_validator_name in validator_map:
+                process_validator(validator_map[container_validator_name])
 
         # Then process all remaining validators
         for validator in validators:
