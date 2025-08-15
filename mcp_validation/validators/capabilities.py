@@ -35,15 +35,15 @@ class CapabilitiesValidator(BaseValidator):
 
         try:
             # Test each advertised capability
-            if context.capabilities.get("resources"):
+            if "resources" in context.capabilities:
                 await self._test_resources_list(context, errors, warnings, data)
                 data["tested_capabilities"].append("resources")
 
-            if context.capabilities.get("tools"):
+            if "tools" in context.capabilities:
                 await self._test_tools_list(context, errors, warnings, data)
                 data["tested_capabilities"].append("tools")
 
-            if context.capabilities.get("prompts"):
+            if "prompts" in context.capabilities:
                 await self._test_prompts_list(context, errors, warnings, data)
                 data["tested_capabilities"].append("prompts")
 
